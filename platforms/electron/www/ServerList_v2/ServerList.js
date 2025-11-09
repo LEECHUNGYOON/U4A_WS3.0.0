@@ -617,16 +617,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (oCoreModel) {
             oCoreModel.setProperty("/SAPLogon", {});
             oCoreModel.setProperty("/ServerList", []);
+            oCoreModel.setProperty("/SAPLogonItems", []);
             oCoreModel.refresh(true);
         }
-
-        // 좌측 테이블 선택 라인 표시 
-        oAPP.fn.fnSetRefreshSelectTreeItem();
-
-        // 우측 테이블 모델 클리어
-        oAPP.fn.fnMTableModelClear();
-
-        // oAPP.setBusy(true);
 
         try {
 
@@ -640,29 +633,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         await oAPP.fn.fnGetRegInfoForSAPLogonThen(oResult);
-        
-        // oAPP.fn.fnGetRegInfoForSAPLogon().then(oAPP.fn.fnGetRegInfoForSAPLogonThen).catch(oAPP.fn.fnPromiseError);
 
     }; // end of oAPP.fn.fnOnListupSapLogon
-
-    /************************************************************************
-     * 우측 테이블 초기화
-     ************************************************************************/
-    oAPP.fn.fnMTableModelClear = () => {
-
-        let oTable = sap.ui.getCore().byId(SERVER_TBL_ID);
-        if (!oTable) {
-            return;
-        }
-
-        let oTableModel = oTable.getModel();
-        if (!oTableModel) {
-            return;
-        }
-
-        oTableModel.setProperty("/SAPLogonItems", []);
-
-    }; // end of oAPP.fn.fnMTableModelClear
 
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon 정보를 읽는다.
@@ -677,7 +649,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             REGEDIT.list(sSaplogonPath, (err, result) => {
 
                 if (err) {
-
                     reject(sErrMsg);
                     return;
                 }
@@ -686,11 +657,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 var oSapLogon = result[sSaplogonPath];
 
                 if (typeof oSapLogon == "undefined" || oSapLogon.exists == false) {
-
-                    // reject(`Does not have exists. [${sSaplogonPath}]`);
-
-                    // let sMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
-
                     reject(sErrMsg);
                     return;
                 }
@@ -702,60 +668,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         });
 
     }; // end of oAPP.fn.fnGetRegInfoForSAPLogon
-
-    /************************************************************************
-     * 레지스트리에 등록된 SAPLogon 정보를 구했을 경우
-     ************************************************************************/
-
-    // [원본]
-    // oAPP.fn.fnGetRegInfoForSAPLogonThen = (oResult) => {
-        
-    //     let oLandscapeFile = oResult.LandscapeFile,
-    //         oLandscapeFileGlobal = oResult.LandscapeFileGlobal,
-    //         sLandscapeFilePath = oLandscapeFile.value,
-    //         sErrMsg = oAPP.msg.M03; //"Please Check the SAPGUI is Installed and whether saved Server is exsists!";
-
-    //     if (typeof oLandscapeFile == "undefined") {
-
-    //         oAPP.setBusy(false);
-
-    //         // var sMsg = `Does not have exists. [LandscapeFile] \n Please Restart`;           
-
-    //         oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
-    //             oAPP.fn.fnEditDialogClose();
-    //         });
-
-    //         return;
-    //     }
-
-    //     // SAPLogon xml 파일이 존재하지 않을 경우 오류
-    //     if (!FS.existsSync(sLandscapeFilePath)) {
-
-    //         oAPP.setBusy(false);
-
-    //         // var sMsg = `Does not have exists. [${sLandscapeFilePath}] \n Please Restart`;
-    //         // let sMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
-
-    //         // 오류 메시지 출력
-    //         oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
-    //             oAPP.fn.fnEditDialogClose();
-    //         });
-
-    //         return;
-    //     }
-
-    //     // SAP Login XML 파일 정보 변경 감지
-    //     if (!oAPP.isWatch) {
-    //         FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
-    //         oAPP.isWatch = true;
-    //     }
-
-    //     // xml 정보를 읽는다
-    //     oAPP.fn.fnReadSAPLogonData("LandscapeFile", sLandscapeFilePath)
-    //         .then(oAPP.fn.fnReadSAPLogonDataThen)
-    //         .catch(oAPP.fn.fnPromiseError);
-
-    // }; // end of oAPP.fn.fnGetRegInfoForSAPLogonThen
 
     oAPP.fn.fnGetRegInfoForSAPLogonThen = function(oResult){
 
@@ -769,8 +681,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             if (typeof oLandscapeFile == "undefined") {
 
                 oAPP.setBusy(false);
-
-                // var sMsg = `Does not have exists. [LandscapeFile] \n Please Restart`;           
 
                 oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
                     oAPP.fn.fnEditDialogClose();
@@ -792,12 +702,27 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 return;
             }
 
-            // SAP Login XML 파일 정보 변경 감지
-            if (!oAPP.isWatch) {
-                FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
-                oAPP.isWatch = true;
+            // // SAP Login XML 파일 정보 변경 감지
+            // if (!oAPP.isWatch) {
+            //     FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
+            //     oAPP.isWatch = true;
+            // }
+
+            /**
+             * @since   2025-11-09 22:17:55
+             * @version vNAN-NAN
+             * @author  soccerhs
+             * @description
+             *  기존에 watch 이벤트가 등록되어 있을 경우에는
+             *  기존 watch를 종료시키고 다시 이벤트를 건다
+             */
+            if(oAPP.oSapLogonWatch){
+                oAPP.oSapLogonWatch.close();
+                delete oAPP.oSapLogonWatch;
             }
-            
+
+            oAPP.oSapLogonWatch = FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
+
             try {
 
                 var oReadResult = await oAPP.fn.fnReadSAPLogonData("LandscapeFile", sLandscapeFilePath);
@@ -820,11 +745,34 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * SAP LOGIN XML 파일이 바뀔때 타는 이벤트
      ************************************************************************/
+    //#region - SAP LOGIN XML 변경 감지
     oAPP.fn.fnSapLogonFileChange = (current, previous) => {
 
-        oAPP.fn.fnOnListupSapLogon();
+        /**
+         * @since   2025-11-09 22:10:52
+         * @version vNAN-NAN
+         * @author  soccerhs
+         * @description
+         * 
+         * SAPGUI 실행시 LOGON XML파일 접근을 여러번 하는지 
+         * Watch 이벤트가 순간적으로 여러번 발생되어 횟수를 줄이고자
+         * setTimeout을 이용해서 xml 파일 변경시 1번만 수행하고자
+         * 사용함.
+         * 
+         */
+        if(typeof oAPP.iSapLogonChangeTimeout !== "undefined"){
+            clearTimeout(oAPP.iSapLogonChangeTimeout);
+            delete oAPP.iSapLogonChangeTimeout;
+        }
+
+        oAPP.iSapLogonChangeTimeout = setTimeout(function(){
+
+            oAPP.fn.fnOnListupSapLogon();
+
+        }, 1000);        
 
     }; // end of oAPP.fn.fnSapLogonFileChange
+    //#endregion - SAP LOGIN XML 변경 감지
 
     /************************************************************************
      * SAP LOGIN XML 파일 읽기 성공
@@ -931,9 +879,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             if (oTreeTable) {
                 oTreeTable.expandToLevel(1);
             }
-
-            // 데이터 갱신 후 화면도 갱신
-            oAPP.fn.fnSetRefreshSelectTreeItem();
 
             let oWorkTree = sap.ui.getCore().byId("WorkTree");
             if (oWorkTree) {
@@ -1720,6 +1665,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             rowSelectionChange: (oEvent) => {
 
+                console.log("Tree Table - rowSelectionChange !!");
+
                 // 우측 서버 리스트 전체 선택 해제
                 oAPP.fn.fnServerListUnselect();
 
@@ -1791,17 +1738,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 선택한 라인 위치를 개인화 파일에 저장한다.
         await oAPP.fn.setRegistryLastSelectedNodeKey(LastSelectedNodeKey);
 
-        // 선택된 라인에 해당하는 서버 리스트 값이 없을 경우 우측 리스트 모델 초기화
-        if (typeof oSelectSubItem == "undefined") {          
+        if (!oSelectSubItem) {            
             return;
         }
 
         var iSelectSubItemLength = oSelectSubItem.length;
-
-        // 선택한 Tree Item이 없을 경우 우측 테이블 클리어
-        if (!oSelectSubItem) {            
-            return;
-        }
 
         var aServerList = oTableModel.getProperty("/ServerList"),
             aItemList = [];
@@ -1816,13 +1757,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
          *  한쪽에서 관리하기 위한 목적으로 아래 소스 주석처리
          * 
          */
-        // let aSavedAllData = [];
-
-        // // 기 저장된 값 전체를 구한다.
-        // let oSavedAllReturn = oAPP.fn.fnGetSavedServerListDataAll();
-        // if (oSavedAllReturn.RETCD == "S") {
-        //     aSavedAllData = oSavedAllReturn.RETDATA;
-        // }
 
         // Item이 배열이 아닌 경우 (폴더의 하위 서버 정보 데이터가 1건만 있을 경우 object로 저장되어 있음.)       
         if (typeof iSelectSubItemLength === "undefined") {
@@ -1832,17 +1766,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 let oFindCopyItem = jQuery.extend(true, {}, oFindItem);
 
-                // // 기 저장된 서버 정보가 있을 경우 저장 플래그를 심는다.
-                // let oSavedData = aSavedAllData.find(element => element.uuid == oFindCopyItem.uuid);
-                // if (oSavedData) {
-                //     oFindCopyItem.ISSAVE = true;
-                // }
-
                 aItemList.push(oFindCopyItem);
 
                 oTableModel.setProperty("/SAPLogonItems", aItemList);
                 oTableModel.refresh();
             }
+
+            // SAPGUI 서버 리스트 정보와 기 저장된 서버 정보 데이터를 동기화
+            _syncSavedServerInfo(oTableModel);
 
             return;
         }
@@ -1862,11 +1793,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 저장된 서버 호스트 정보가 있다면 저장 플래그를 심는다.
             let oFindCopyItem = jQuery.extend(true, {}, oFindItem);
 
-            // let oSavedData = aSavedAllData.find(element => element.uuid == oFindCopyItem.uuid);
-            // if (oSavedData) {
-            //     oFindCopyItem.ISSAVE = true;
-            // }
-
             aItemList.push(oFindCopyItem);
 
         }
@@ -1876,7 +1802,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return a.name.localeCompare(b.name);
         });
 
-        oTableModel.setProperty("/SAPLogonItems", aItemList);        
+        oTableModel.setProperty("/SAPLogonItems", aItemList);   
+        
+        // SAPGUI 서버 리스트 정보와 기 저장된 서버 정보 데이터를 동기화
+        _syncSavedServerInfo(oTableModel);
 
     }; // end of oAPP.fn.fnPressWorkSpaceTreeItem
 
@@ -2175,7 +2104,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }).addEventDelegate({
             ondblclick: oAPP.fn.fnPressServerListItem,
             onAfterRendering: function(oEvent){                
-                oAPP.fn.fnServerListonAfterRendering(oEvent);
+                // oAPP.fn.fnServerListonAfterRendering(oEvent);
             }
         }).addStyleClass("u4aWsServerListTbl");
 
