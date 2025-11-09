@@ -273,6 +273,9 @@ function Wait-ForFile {
 try {
     # 1. Parse the JSON input
     $config = Parse-JsonSafely -JsonString $JsonInput
+
+    # log Prefix 만들때 버전 + Patch 번호 조합하기
+    $logPrefix += "_" + $config.VERSN
     
     # Verify required JSON field exists(version)
     if ($null -eq $config.VERSN) {

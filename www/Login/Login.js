@@ -1372,12 +1372,12 @@ let oAPP = (function () {
                 // parent.setDomBusy('');
 
                 //#region TEST ------ Start
-                debugger;                
+                // debugger;                
 
-                // 개발자 권한 성공시
-                oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
+                // // 개발자 권한 성공시
+                // oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
 
-                return;
+                // return;
                 //#endregion TEST ---------End
 
                 oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);               

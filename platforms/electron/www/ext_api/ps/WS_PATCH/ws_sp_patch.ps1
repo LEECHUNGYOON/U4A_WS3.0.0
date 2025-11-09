@@ -426,6 +426,9 @@ function Process-Downloads {
 try {
     # Parse the JSON input
     $config = Parse-JsonSafely -JsonString $JsonInput
+
+    # log Prefix 만들때 버전 + Patch 번호 조합하기
+    $logPrefix += "_" + $config.VERSN + "-" + $config.SPLEV
     
     # Verify JSON fields and validate counts
     if ($null -eq $config.TOTSP -or $null -eq $config.TOTND) {
