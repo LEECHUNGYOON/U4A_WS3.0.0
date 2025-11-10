@@ -1665,8 +1665,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             rowSelectionChange: (oEvent) => {
 
-                console.log("Tree Table - rowSelectionChange !!");
-
                 // 우측 서버 리스트 전체 선택 해제
                 oAPP.fn.fnServerListUnselect();
 

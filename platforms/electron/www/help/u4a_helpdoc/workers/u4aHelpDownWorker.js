@@ -32,6 +32,9 @@ const PRC = {
     // 프로그래스바 데이터 설정
     SET_PROG_DATA: "SET_PROG_DATA",
 
+    // 다운로드 중 콘솔오류 대상
+    UPDATE_ERROR_CONSOLE: "update-error-console" 
+
 };
 
 
@@ -188,7 +191,8 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
             "-sapUser", oPARAM.SAP_USER,
             "-sapPassword", oPARAM.SAP_PW,
             "-dPath", oPARAM.TMP_ROOT_PATH,
-            "-JsonInput", JSON.stringify(FILE_INFO)
+            "-JsonInput", JSON.stringify(FILE_INFO),
+            "-logPath", oPARAM.LOG_FLD_PATH
         ]);
 
         // 실행 결과 출력
@@ -199,9 +203,28 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
             if(!data?.toString()?.trim()){                
                 return;
             }
+            
+            let sData = data?.toString();
 
-            // 다운로드 수행 횟수 증가
-            iCount++;
+            /**
+             * @since   2025-11-05
+             * @version vNAN-NAN
+             * @author  soccerhs
+             * 
+             * @description
+             *  [기존] 
+             *      - powershell에서 패치 파일 다운로드 진행 중,
+             *        Write-Host 출력(stdout)을 다운로드 성공 신호로 인식하여 퍼센트 계산함
+             *  [변경]
+             *      - stdout 로그 중 단순 로그 용으로 Write-Host를 사용하는 경우가 있어서,
+             *        특정 키워드(CHUNK_DOWN_OK) 포함 시에만 다운로드 성공으로 간주하도록 수정함
+             */
+            if(sData.includes("CHUNK_DOWN_OK") === true){
+
+                // 다운로드 수행 횟수 증가
+                iCount++;
+            
+            }
 
             let sLog = `Help Document 다운로드 중: ${data.toString()}`;
 
@@ -214,9 +237,7 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
                 LOG  : sLog
             };
 
-            self.postMessage(oRES);
-
-            // console.log(sLog);
+            self.postMessage(oRES);            
             
         });
 
@@ -225,15 +246,33 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
 
             let sLog = `Document 다운로드 중 에러: ${data.toString()}`;
 
-            console.error(sLog);            
-            console.trace();
+            // console.error(sLog);            
+            // console.trace();
 
-            if (!ps.killed) {              
-                ps.kill();
-                console.log("kill-1");
-            }
+            // if (!ps.killed) {              
+            //     ps.kill();
+            //     console.log("kill-1");
+            // }
 
-            return resolve({ SUBRC: 999, LOG: sLog });
+            // return resolve({ SUBRC: 999, LOG: sLog });
+
+            /**
+             * @since   2025-11-05
+             * @version vNAN-NAN
+             * @author  soccerhs
+             * 
+             * @description
+             * - powershell 에서 발생되는 오류 메시지를 받으면 child_process를 중지 시키지 않고 
+             *   콘솔 오류만 발생시키는 로직으로 수정함             
+             */
+            var oRES = JSON.parse(JSON.stringify(TY_RES)); 
+
+            oRES.PRCCD = PRC.UPDATE_ERROR_CONSOLE; // 다운로드 중 콘솔오류 대상
+            oRES.PARAM = {
+                LOG: sLog
+            };
+
+            self.postMessage(oRES);
 
         });
 
@@ -244,7 +283,6 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
 
             if (!ps.killed) {              
                 ps.kill();
-                console.log("kill-2");
             }
 
             return resolve({ SUBRC: code });
@@ -254,9 +292,6 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
     });
 
 }; // end of _getHelpDocuDataFromPowerShell
-
-
-
 
 /**
  * U4A Help Document Download 

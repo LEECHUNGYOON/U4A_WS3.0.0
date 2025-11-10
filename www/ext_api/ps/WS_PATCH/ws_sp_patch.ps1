@@ -50,8 +50,16 @@ param (
     [Parameter(Mandatory=$false)]
     [pscredential]$ProxyCredential,
 
-    # logPath
-    [Parameter(Mandatory=$true)]
+    # ──────────────────────────────────────── *
+    # @since   2025-11-10 11:01:47
+    # @version vNAN-NAN
+    # @author  soccerhs
+    # @description
+    # 
+    # - 파워쉘에서 발생되는 로그는 전달받은 경로로 저장
+    #
+    # ──────────────────────────────────────── *
+    [Parameter(Mandatory=$false)]
     [string]$logPath
 )
 
@@ -73,14 +81,23 @@ $ERROR_RESPONSE = 9
 $ERROR_INVOKE_WEB_REQ = 10
 $ERROR_NO_FILE_EXIST = 11
 
-#region 📝 2025-11-05 by yoon ---- 로그 관련 Import
+#region 📝 2025-11-05 by yoon - 로그 관련
+
+# 로그 관련 공통함수
 Import-Module "$PSScriptRoot/../COMMON/log.psm1"
 
+# 로그 파일이름의 Prefix 지정
 $logPrefix = "U4A_WS_PATCH";
 
-#endregion 📝 2025-11-05 by yoon ---- 로그 관련 
-
-#region 📝 2025-11-05 by yoon ---- 파일레벨로 로그 남기는 공통 함수
+# ──────────────────────────────────────── *
+# @since   2025-11-10 11:13:13
+# @version vNAN-NAN
+# @author  soccerhs
+# @description
+# 
+# 파일레벨로 로그 남기는 공통 함수
+# 
+# ──────────────────────────────────────── *
 function Write-Log {
     param (
 
@@ -91,10 +108,12 @@ function Write-Log {
   
     )
 
-    Write-DailyLog -Message $Message -Prefix $logPrefix -LogDir $logPath -Type $Type
+    if ($logPath) {
+        Write-DailyLog -Message $Message -Prefix $logPrefix -LogDir $logPath -Type $Type
+    }    
 }
 
-#endregion 📝 2025-11-05 by yoon ---- 파일레벨로 로그 남기는 공통 함수
+#endregion 📝 2025-11-05 by yoon - 로그 관련
 
 # Function to parse JSON safely
 function Parse-JsonSafely {
@@ -246,8 +265,15 @@ function Test-UrlConnectivity {
     }
 }
 
-#region 2025-11-03 by yoon ---- 파일이 존재하는지 체크
-### 2025-11-03 by yoon
+# ──────────────────────────────────────── *
+# @since   2025-11-03 11:21:37
+# @version vNAN-NAN
+# @author  soccerhs
+# @description
+#
+# - 파일이 존재하는지 체크 하는 함수
+#
+# ──────────────────────────────────────── *
 # Waits up to 30 seconds for a file to appear; returns 1 if found, 0 otherwise.
 function Wait-ForFile {
     param(
@@ -330,7 +356,15 @@ function Process-Downloads {
         $reqParms.OutFile = $tempOutputFile
         $reqParms.Body = $body
 
-        #region 2025-11-03 by yoon ---- WebRequest 통신 오류 체크
+        # ──────────────────────────────────────── *
+        # @since   2025-11-10 11:39:34
+        # @version vNAN-NAN
+        # @author  soccerhs
+        # @description
+        # 
+        #  - Invoke-WebRequest 통신 오류 예외로직 추가
+        # 
+        # ──────────────────────────────────────── *
         try {
 
             $ProgressPreference = 'SilentlyContinue'
@@ -349,40 +383,55 @@ function Process-Downloads {
             # 종료 코드로 명시적 전달
             exit $ERROR_INVOKE_WEB_REQ
 
-        }
-        #endregion 2025-11-03 by yoon ---- WebRequest 통신 오류 체크
-
-        #region 2025-11-03 by yoon ---- 파일 존재 유무 체크 (30초동안 1초에 한번식 체크)
-        # 실제 파일이 있는지 확인
-        $isfileExixts = Wait-ForFile -FilePath $tempOutputFile -TimeoutSeconds 30
-        if ($isfileExixts -eq 1) {
-            Write-Host "Success: File exists. $Type file: $tempOutputFile"
-            Write-Log -Type "I" -Message "Success: File exists. $Type file: $tempOutputFile"
-        } else {         
-            Write-Error "Error: File not found. $Type file: $tempOutputFile"
-            Write-Log -Type "E" -Message "Error: File not found. $Type file: $tempOutputFile"
-            exit $ERROR_NO_FILE_EXIST
-        }
-        #endregion 2025-11-03 by yoon ---- 파일 존재 유무 체크 (30초동안 1초에 한번식 체크)
-
-        # Check for bad file data
-        $fileContent = Get-Content $tempOutputFile -Raw -ErrorAction SilentlyContinue
-        if ($fileContent -eq "X") {
-            Write-Host "Warning: File contains only 'X' character, which indicates an error"
-            Write-Log -Type "I" -Message "Warning: File contains only 'X' character, which indicates an error"
-        }
-
-        # Check for response error in the downloaded file
-        $retError = Check-retError -FilePath $tempOutputFile
-        if ($retError) {
-            Write-Error $retError
-            Write-Log -Type "E" -Message $retError
-            Pop-Location
-            exit $ERROR_RESPONSE
-        }
+        } 
         
-        Write-Host "CHUNK_DOWN_OK:$i"
-        Write-Log -Type "I" -Message "CHUNK_DOWN_OK_GOOD:$i"
+        try {  
+
+            # ──────────────────────────────────────── *
+            # @since   2025-11-10 11:30:06
+            # @version vNAN-NAN
+            # @author  soccerhs
+            # @description
+            # 
+            #  - 파일 존재 유무 체크 
+            #   (30초동안 1초에 한번식 체크)        
+            # ──────────────────────────────────────── * 
+            $isfileExixts = Wait-ForFile -FilePath $tempOutputFile -TimeoutSeconds 30
+            if ($isfileExixts -eq 1) {
+                Write-Host "Success: File exists. $Type file: $tempOutputFile"
+                Write-Log -Type "I" -Message "Success: File exists. $Type file: $tempOutputFile"
+            } else {         
+                Write-Error "Error: File not found. $Type file: $tempOutputFile"
+                Write-Log -Type "E" -Message "Error: File not found. $Type file: $tempOutputFile"
+                exit $ERROR_NO_FILE_EXIST
+            }
+
+            # Check for bad file data
+            $fileContent = Get-Content $tempOutputFile -Raw -ErrorAction SilentlyContinue
+            if ($fileContent -eq "X") {
+                Write-Host "Warning: File contains only 'X' character, which indicates an error"
+                Write-Log -Type "I" -Message "Warning: File contains only 'X' character, which indicates an error"
+            }          
+
+            # Check for response error in the downloaded file
+            $retError = Check-retError -FilePath $tempOutputFile
+            if ($retError) {
+                Write-Error $retError
+                Write-Log -Type "E" -Message $retError
+                Pop-Location
+                exit $ERROR_RESPONSE
+            }
+            
+            Write-Host "CHUNK_DOWN_OK:$i"
+            Write-Log -Type "I" -Message "CHUNK_DOWN_OK:$i"
+        }
+        catch {
+            Write-Error "Failed to download file $tempOutputFile : $($_.Exception.Message)"
+            Write-Log -Type "E" -Message "Failed to download file $tempOutputFile : $($_.Exception.Message)"
+            Write-Log -Type "E" -Message  ($_ | Out-String)
+            exit $ERROR_DOWNLOAD
+        }
+
     }
     
     Write-Progress -Activity "Downloading $Type Files" -Completed

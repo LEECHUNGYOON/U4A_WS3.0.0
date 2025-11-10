@@ -160,7 +160,7 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
 
             /**
              * @since   2025-11-05
-             * @version v3.5.6-14
+             * @version vNAN-NAN
              * @author  soccerhs
              * 
              * @description
@@ -207,7 +207,7 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
 
             /**
              * @since   2025-11-05
-             * @version v3.5.6-13
+             * @version vNAN-NAN
              * @author  soccerhs
              * 
              * @description

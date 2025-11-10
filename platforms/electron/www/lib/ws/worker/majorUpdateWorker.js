@@ -1,4 +1,5 @@
 const FS = require("fs");
+const { endianness } = require("os");
 const spawn = require("child_process").spawn;
 
 // 공통 응답 구조
@@ -137,14 +138,25 @@ function _majorVersionDownPowerShell(oPARAM){
 
             let sData = data?.toString();
 
-            //#region - ws3.0 에 추가 및 수정 해야할 항목
+            /**
+             * @since   2025-11-05
+             * @version vNAN-NAN
+             * @author  soccerhs
+             * 
+             * @description
+             *  [기존] 
+             *      - powershell에서 패치 파일 다운로드 진행 중,
+             *        Write-Host 출력(stdout)을 다운로드 성공 신호로 인식하여 퍼센트 계산함
+             *  [변경]
+             *      - stdout 로그 중 단순 로그 용으로 Write-Host를 사용하는 경우가 있어서,
+             *        특정 키워드(CHUNK_DOWN_OK) 포함 시에만 다운로드 성공으로 간주하도록 수정함
+             */
             if(sData.includes("CHUNK_DOWN_OK") === true){
 
                 // 다운로드 수행 횟수 증가
                 iCount++;
             
             }
-            //#endregion
 
             let sLog = `Major 업데이트 파일 다운로드 중..: ${data.toString()}`;
             
@@ -159,16 +171,13 @@ function _majorVersionDownPowerShell(oPARAM){
 
             self.postMessage(oRES);
 
-            console.log(sLog);
-
         });
 
         // 에러 메시지 출력
         ps.stderr.on("data", (data) => {
       
-            let sLog = `Major 업데이트 다운로드 중 에러: ${data.toString()}`;
+            let sLog = `Major 업데이트 다운로드 중 에러: ${data.toString()}`;            
             
-            //#region - ws3.0 에 추가 및 수정 해야할 항목
             var oRES = JSON.parse(JSON.stringify(TY_RES)); 
 
             oRES.PRCCD = PRC.UPDATE_ERROR_CONSOLE; // 다운로드 중 콘솔오류 대상
@@ -176,8 +185,7 @@ function _majorVersionDownPowerShell(oPARAM){
                 LOG: sLog
             };
 
-            self.postMessage(oRES);
-            //#endregion
+            self.postMessage(oRES);            
 
         });
 
@@ -194,7 +202,7 @@ function _majorVersionDownPowerShell(oPARAM){
 
     });
 
-};
+}; // end of _majorVersionDownPowerShell
 
 /**
  * WS Major update

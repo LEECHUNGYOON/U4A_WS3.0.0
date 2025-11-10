@@ -44,8 +44,16 @@ param (
     [Parameter(Mandatory=$false)]
     [pscredential]$ProxyCredential,
 
-    # logPath
-    [Parameter(Mandatory=$true)]
+    # ──────────────────────────────────────── *
+    # @since   2025-11-10 11:01:47
+    # @version vNAN-NAN
+    # @author  soccerhs
+    # @description
+    # 
+    # - 파워쉘에서 발생되는 로그는 전달받은 경로로 저장
+    #
+    # ──────────────────────────────────────── *
+    [Parameter(Mandatory=$false)]
     [string]$logPath
 )
 
@@ -66,12 +74,23 @@ $ERROR_GENERAL = 8
 $ERROR_INVOKE_WEB_REQ = 10
 $ERROR_NO_FILE_EXIST = 11
 
-#region 📝 2025-11-05 by yoon ---- 로그 관련 Import
+#region 📝 2025-11-05 by yoon - 로그 관련
+
+# 로그 관련 공통함수
 Import-Module "$PSScriptRoot/../COMMON/log.psm1"
 
+# 로그 파일이름의 Prefix 지정
 $logPrefix = "U4A_WS_MAJOR";
 
-#region 📝 2025-11-05 by yoon ---- 파일레벨로 로그 남기는 공통 함수
+# ──────────────────────────────────────── *
+# @since   2025-11-10 11:13:13
+# @version vNAN-NAN
+# @author  soccerhs
+# @description
+# 
+# 파일레벨로 로그 남기는 공통 함수
+# 
+# ──────────────────────────────────────── *
 function Write-Log {
     param (
 
@@ -82,10 +101,12 @@ function Write-Log {
   
     )
 
-    Write-DailyLog -Message $Message -Prefix $logPrefix -LogDir $logPath -Type $Type
+    if ($logPath) {
+        Write-DailyLog -Message $Message -Prefix $logPrefix -LogDir $logPath -Type $Type
+    }    
 }
 
-#endregion 📝 2025-11-05 by yoon ---- 파일레벨로 로그 남기는 공통 함수
+#endregion 📝 2025-11-05 by yoon - 로그 관련
 
 # Function to parse JSON safely
 function Parse-JsonSafely {
@@ -97,7 +118,6 @@ function Parse-JsonSafely {
     catch {
         Write-Error "Failed to parse JSON input: $($_.Exception.Message)"        
         Write-Log -Type "E" -Message "Failed to parse JSON input: $($_ | Out-String)"
-
         exit $ERROR_JSON_PARSE
     }
 }
@@ -147,7 +167,7 @@ function Check-retError {
     }
     catch {
         Write-Debug "Error checking authentication: $($_.Exception.Message)"
-        Write-Log -Type "E" -Message  "Error checking authentication: $($_ | Out-String)"     
+        Write-Log -Type "E" -Message  "Error checking authentication: $($_ | Out-String)"
         return $null
     }
 }
@@ -162,7 +182,7 @@ function Test-UrlConnectivity {
     
     try {
         Write-Host "Testing connectivity to $Url..."
-        Write-Log -Type "I" -Message "Testing connectivity to $Url..."   
+        Write-Log -Type "I" -Message "Testing connectivity to $Url..."
         
         # Create parameter hashtable for Invoke-WebRequest
         $testParams = @{
@@ -236,8 +256,15 @@ function Test-UrlConnectivity {
     }
 }
 
-#region 2025-11-03 by yoon ---- 파일이 존재하는지 체크
-### 2025-11-03 by yoon
+# ──────────────────────────────────────── *
+# @since   2025-11-03 11:21:37
+# @version vNAN-NAN
+# @author  soccerhs
+# @description
+#
+# - 파일이 존재하는지 체크 하는 함수
+#
+# ──────────────────────────────────────── *
 # Waits up to 30 seconds for a file to appear; returns 1 if found, 0 otherwise.
 function Wait-ForFile {
     param(
@@ -267,7 +294,6 @@ function Wait-ForFile {
     }
     return 0
 }
-#endregion 
 
 # Main execution block
 try {
@@ -407,6 +433,15 @@ try {
         $requestParams.OutFile = $outputFile
         $requestParams.Body = $body
 
+        # ──────────────────────────────────────── *
+        # @since   2025-11-10 11:39:34
+        # @version vNAN-NAN
+        # @author  soccerhs
+        # @description
+        # 
+        #  - Invoke-WebRequest 통신 오류 예외로직 추가
+        # 
+        # ──────────────────────────────────────── *
         try {            
             $ProgressPreference = 'SilentlyContinue'            
             $response = Invoke-WebRequest @requestParams
@@ -427,9 +462,16 @@ try {
         }
 
         try {
-
-            #region 2025-11-03 by yoon ---- 파일 존재 유무 체크 (30초동안 1초에 한번식 체크)
-            # 실제 파일이 있는지 확인
+            
+            # ──────────────────────────────────────── *
+            # @since   2025-11-10 11:30:06
+            # @version vNAN-NAN
+            # @author  soccerhs
+            # @description
+            # 
+            #  - 파일 존재 유무 체크 
+            #   (30초동안 1초에 한번식 체크)        
+            # ──────────────────────────────────────── *  
             $isfileExixts = Wait-ForFile -FilePath $outputFile -TimeoutSeconds 30
             if ($isfileExixts -eq 1) {
                 Write-Host "Success: File exists. file: $outputFile"
@@ -438,8 +480,7 @@ try {
                 Write-Error "Error: File not found. file: $outputFile"
                 Write-Log -Type "E" -Message "Error: File not found. file: $outputFile"
                 exit $ERROR_NO_FILE_EXIST
-            }
-            #endregion 2025-11-03 by yoon ---- 파일 존재 유무 체크 (30초동안 1초에 한번식 체크)                        
+            }            
  
             # Check for response error in the downloaded file
             $retError = Check-retError -FilePath $outputFile

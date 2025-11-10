@@ -104,7 +104,15 @@ async function gfn_getHeadData() {
 
         // var LV_URL = GV_HOST + "/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=HEAD";
 
-        // 2025-02-11 SOCCERHS: 언어 정보까지 전달.
+        /**
+         * @since   2025-02-11 10:38:52
+         * @version v3.5.1-1
+         * @author  soccerhs
+         * @description
+         * 
+         * Help Document 헤더 정보 요청 시 언어 정보까지 전달.
+         * 
+         */
         var LV_URL = `${GV_HOST}/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=HEAD&LANGU_OUT=${GV_USER_INFO.LANGU}`;
         var xhttp = new XMLHttpRequest();
         xhttp.onerror = (e) => {
@@ -437,6 +445,20 @@ function _getHelpDocFileDown(oPARAM){
 
                     return;
 
+                // 파워쉘 수행 중 오류에 대한 로그 남기기
+                case "update-error-console": 
+
+                    // 로그 정보가 있을 경우에는 콘솔 오류에 로그 정보를 담는다
+                    var sLog = "";
+                    var _oPARAM = oIF_DATA?.PARAM || undefined;
+                    if(_oPARAM?.LOG){
+                        sLog = _oPARAM.LOG;
+                    }  
+
+                    console.error(sLog);
+
+                    return;
+
                 // 프로그래스바 데이터 설정
                 case "SET_PROG_DATA":
 
@@ -587,12 +609,46 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
         //Help document 버젼 파일 Path 설정 
         let LV_VESN_PATH = oPATH.join(LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + ".json");
         
+        /**
+         * @since   2025-11-07 15:06:07
+         * @version vNAN-NAN
+         * @author  soccerhs
+         * @description
+         * 
+         * 파워쉘에서 발생되는 로그를 남기기 위한 경로
+         
+         */
+        // 로그 저장 폴더 경로
+        let sLogFolderPath = PATH.join(USERDATA, "logs", "u4a_ws_help_doc");
+        
+        if(APP.isPackaged){
+            sLogFolderPath = PATH.join(USERDATA, "logs");
+        }
+
+        /**
+         * @since   2025-11-07 15:06:07
+         * @version vNAN-NAN
+         * @author  soccerhs
+         * @description
+         * 
+         * 서버 설정값에 내부 인터널 주소 설정이 되어있다면 내부 호스트를 BaseUrl로 지정한다.
+         *      
+         */
+        let oServerSettings = oLoginInfo?.SERVER_SETTINGS || undefined;
+
+        // Base Url 설정
+        let sBaseUrl = parent.getServerHost();
+
+        if(oServerSettings && oServerSettings.useInternal === true){
+            sBaseUrl = oLoginInfo.META.HOST;
+        }
+
         let oPARAM = {
 
             // 파워쉘 파일 경로
             PS_DOC_PATH : sPsPath,
 
-            BASE_URL     : parent.getServerHost(),
+            BASE_URL     : sBaseUrl,
             SAP_CLIENT   : oLoginInfo.CLIENT,
             SAP_USER     : oLoginInfo.ID,
             SAP_PW       : oLoginInfo.PW,
@@ -604,7 +660,10 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
             VESN_PATH    : LV_VESN_PATH,
 
             // Help Document Header Data
-            HEAD_DATA: HEAD_DATA
+            HEAD_DATA    : HEAD_DATA,
+
+            // 로그 폴더 경로
+            LOG_FLD_PATH : sLogFolderPath
 
         };
 
