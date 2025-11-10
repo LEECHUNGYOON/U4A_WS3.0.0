@@ -2101,9 +2101,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         }).addEventDelegate({
             ondblclick: oAPP.fn.fnPressServerListItem,
-            onAfterRendering: function(oEvent){                
-                // oAPP.fn.fnServerListonAfterRendering(oEvent);
-            }
         }).addStyleClass("u4aWsServerListTbl");
 
         /**
@@ -2421,7 +2418,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    required: true,
+                                    required: false,
                                     design: "Bold",
                                     text: "use Internal"
                                 }),
