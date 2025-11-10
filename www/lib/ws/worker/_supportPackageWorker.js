@@ -310,255 +310,191 @@ function _updateSuppPackFromCDN(oPARAM){
 
 
 /**
- * @since   2025-11-10 12:26:07
- * @version vNAN-NAN
- * @author  soccerhs
- * @description
- * 
- * - 폴더 또는 파일 강제 삭제
- * - 폴더 경로를 지정 시, 하위 전체까지 삭제됨.
- */
-async function _removeFolderAndFile(sPath){
-
-    if(!sPath){
-        return;
-    }
-
-    if(FS.existsSync(sPath) === false){
-        return;
-    }
-
-    try {
-        FS.rmSync(sPath, { recursive: true, force: true });    
-    } catch (error) {
-        
-    }
-    
-} // end of _removeFolderAndFile
-
-
-
-/**
  * WS Patch Update
  */
 self.WS_PATCH_UPDATE = async function (oPARAM) {
 
-    try {        
+    // 공통 응답 구조
+    var oRES = JSON.parse(JSON.stringify(TY_RES));
 
-        // 공통 응답 구조
-        var oRES = JSON.parse(JSON.stringify(TY_RES));
+    // 리소스 경로
+    let sResourcePath = oPARAM.RESOURCE_PATH;
 
-        // 리소스 경로
-        var sResourcePath = oPARAM.RESOURCE_PATH;
+    // 기존 asar 파일을 압축을 해제할 임시 폴더 경로
+    var LV_APP_PATH = PATH.join(sResourcePath, "app");
 
-        // 기존 asar 파일을 압축을 해제할 임시 폴더 경로
-        var LV_APP_PATH = PATH.join(sResourcePath, "app");
+    // 기존 asar 파일을 압축 해제할 임시 폴더 생성
+    FS.mkdirSync(LV_APP_PATH, { recursive: true });
 
-        // 기존 asar 파일을 압축 해제할 임시 폴더 생성
-        FS.mkdirSync(LV_APP_PATH, { recursive: true });
+    // 기존 asar 파일 경로
+    var LV_ASAR_PATH = PATH.join(sResourcePath, "app.asar");
 
-        // 기존 asar 파일 경로
-        var LV_ASAR_PATH = PATH.join(sResourcePath, "app.asar");
+    // 기존 asar 파일이 있는지 체크
+    if(FS.existsSync(LV_ASAR_PATH) === false){
 
-        // 기존 asar 파일이 있는지 체크
-        if(FS.existsSync(LV_ASAR_PATH) === false){
-
-            oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-            oRES.STCOD = `WS_PATCH_UPDATE-E001`; // app.asar 파일 없음!!
-            oRES.MSGNR = "M22";  // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
-
-            self.postMessage(oRES);
-
-            return;
-        }
-
-
-    // // --------------------------------------------
-    // // 업데이트 방식에 따른 분기처리
-    // // --------------------------------------------
-
-    //     let bIsCdn = oPARAM.ISCDN;
-    //     if(bIsCdn === true){
-
-    //         // CDN 방식 업데이트
-    //         _updateSuppPackFromCDN(oPARAM);
-
-    //         return;
-    //     }
-
-
-
-    // --------------------------------------------
-    // ☝️step1. Patch 파일을 쉘로 다운 받는다.
-    // --------------------------------------------
-
-        let oShellResult = await _getSuppPackDataFromPowerShell(oPARAM);
-        if(oShellResult.SUBRC !== 0){
-
-            oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-            oRES.STCOD = `WS_PATCH_UPDATE-E002-SUBRC:${oShellResult.SUBRC}`;
-            oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
-            oRES.PARAM = {
-                LOG: oShellResult?.LOG || "" // PowerShell 오류 로그
-            };
-
-            self.postMessage(oRES);
-
-            return;
-
-        }
-
-        oRES.PRCCD = PRC.UPDATE_INSTALL; // asar 압축 및 인스톨
+        oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
+        oRES.STCOD = `WS_PATCH_UPDATE-E001`; // app.asar 파일 없음!!
+        oRES.MSGNR = "M22";  // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
 
         self.postMessage(oRES);
 
+        return;
+    }
 
-    // --------------------------------------------
-    // ☝️step2. asar 소스파일 압축해제 처리
-    // --------------------------------------------
+
+// // --------------------------------------------
+// // 업데이트 방식에 따른 분기처리
+// // --------------------------------------------
+
+//     let bIsCdn = oPARAM.ISCDN;
+//     if(bIsCdn === true){
+
+//         // CDN 방식 업데이트
+//         _updateSuppPackFromCDN(oPARAM);
+
+//         return;
+//     }
+
+
+
+// --------------------------------------------
+// ☝️step1. Patch 파일을 쉘로 다운 받는다.
+// --------------------------------------------
+
+    let oShellResult = await _getSuppPackDataFromPowerShell(oPARAM);
+    if(oShellResult.SUBRC !== 0){
+
+        oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
+        oRES.STCOD = `WS_PATCH_UPDATE-E002-SUBRC:${oShellResult.SUBRC}`;
+        oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
+        oRES.PARAM = {
+            LOG: oShellResult?.LOG || "" // PowerShell 오류 로그
+        };
+
+        self.postMessage(oRES);
+
+        return;
+
+    }
+
+    oRES.PRCCD = PRC.UPDATE_INSTALL; // asar 압축 및 인스톨
+
+    self.postMessage(oRES);
+
+
+// --------------------------------------------
+// ☝️step2. asar 소스파일 압축해제 처리
+// --------------------------------------------
+try {
+
+    await ASAR.extractAll(LV_ASAR_PATH, LV_APP_PATH);
+
+} catch (err) {        
+
+    oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
+    oRES.STCOD = `WS_PATCH_UPDATE-E003`; // asar 파일 압축 풀다가 오류 발생
+    oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
+    oRES.PARAM = {
+        LOG: err && err?.toString() || "" // 오류 로그
+    };
+
+    self.postMessage(oRES);
+
+    return;
+}
+
+// --------------------------------------------
+// ☝️step5. 다운받은 app.zip 파일 압축 해제
+// --------------------------------------------
+
+    // 압축 해제 대상 파일
+    var sSourcePath = PATH.join(sResourcePath, "app.zip");
+
+    var sTargetPath = sResourcePath;
+
+    let oAppZipExtResult = await _zipExtractAsync(sSourcePath, sTargetPath, true);
+    if(oAppZipExtResult.RETCD === "E"){
+
+        oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
+        oRES.STCOD = `WS_PATCH_UPDATE-E004`; // 다운받은 app.zip 파일 압축 풀다가 오류 발생
+        oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
+
+        self.postMessage(oRES);
+
+        return;
+
+    }
+
+    //app.zip 다운로드처리 전 이전 쓰레기 File 제거
+    try { FS.unlinkSync(sSourcePath); } catch (err) { }
+
+
+// --------------------------------------------
+// ☝️step6. node_modules.zip 파일이 존재할 경우 압축 해제
+// --------------------------------------------
+
+    // 압축 해제 대상 파일
+    var sSourcePath = PATH.join(sResourcePath, "node_modules.zip");
+
+    if(FS.existsSync(sSourcePath) === true){
+
+        let oNDZipExtResult = await _zipExtractAsync(sSourcePath, sTargetPath, true);        
+        if(oNDZipExtResult.RETCD === "E"){
+
+            oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
+            oRES.STCOD = `WS_PATCH_UPDATE-E005`; // 다운받은 node_modules.zip 파일 압축 풀다가 오류 발생
+            oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
+
+            self.postMessage(oRES);
+
+            return;
+        }
+
+    }
+
+
+// --------------------------------------------
+// ☝️step7. asar 소스파일 압축 처리 
+// --------------------------------------------
+
     try {
 
-        await ASAR.extractAll(LV_ASAR_PATH, LV_APP_PATH);
+        await ASAR.createPackage(LV_APP_PATH, LV_ASAR_PATH);
 
-    } catch (err) {        
+    } catch (err) {
 
         oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-        oRES.STCOD = `WS_PATCH_UPDATE-E003`; // asar 파일 압축 풀다가 오류 발생
+        oRES.STCOD = `WS_PATCH_UPDATE-E006`; // app.asar 만들다가 오류
         oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
         oRES.PARAM = {
-            LOG: err && err?.toString() || "" // 오류 로그
-        };
-
-        self.postMessage(oRES);
-
-        return;
-    }
-
-    // --------------------------------------------
-    // ☝️step5. 다운받은 app.zip 파일 압축 해제
-    // --------------------------------------------
-
-        // 압축 해제 대상 파일
-        var sSourcePath = PATH.join(sResourcePath, "app.zip");
-
-        var sTargetPath = sResourcePath;
-
-        let oAppZipExtResult = await _zipExtractAsync(sSourcePath, sTargetPath, true);
-        if(oAppZipExtResult.RETCD === "E"){
-
-            oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-            oRES.STCOD = `WS_PATCH_UPDATE-E004`; // 다운받은 app.zip 파일 압축 풀다가 오류 발생
-            oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
-
-            self.postMessage(oRES);
-
-            return;
-
-        }
-
-        //app.zip 다운로드처리 전 이전 쓰레기 File 제거
-        try { FS.unlinkSync(sSourcePath); } catch (err) { }
-
-
-    // --------------------------------------------
-    // ☝️step6. node_modules.zip 파일이 존재할 경우 압축 해제
-    // --------------------------------------------
-
-        // 압축 해제 대상 파일
-        var sSourcePath = PATH.join(sResourcePath, "node_modules.zip");
-
-        if(FS.existsSync(sSourcePath) === true){
-
-            let oNDZipExtResult = await _zipExtractAsync(sSourcePath, sTargetPath, true);        
-            if(oNDZipExtResult.RETCD === "E"){
-
-                oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-                oRES.STCOD = `WS_PATCH_UPDATE-E005`; // 다운받은 node_modules.zip 파일 압축 풀다가 오류 발생
-                oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
-
-                self.postMessage(oRES);
-
-                return;
-            }
-
-        }
-
-
-    // --------------------------------------------
-    // ☝️step7. asar 소스파일 압축 처리 
-    // --------------------------------------------
-
-        try {
-
-            await ASAR.createPackage(LV_APP_PATH, LV_ASAR_PATH);
-
-        } catch (err) {
-
-            oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-            oRES.STCOD = `WS_PATCH_UPDATE-E006`; // app.asar 만들다가 오류
-            oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
-            oRES.PARAM = {
-                LOG: err && err?.toString() || "" // PowerShell 오류 로그
-            };
-            
-            self.postMessage(oRES);
-
-            // res({ RETCD: "E", RTMSG: GS_MSG.M21 }); //app.asar 소스 압축 하는 과정에서 오류가 발생하였습니다
-
-            return;
-        }
-
-        await _fnWaiting(500);
-
-        //압축 해제한 폴더 삭제 처리 
-        FS.rmdir(LV_APP_PATH, {
-            recursive: true, force: true
-        }, (error) => {
-
-        });
-
-        await _fnWaiting(500);
-
-
-    // --------------------------------------------
-    // ☝️step8. 패치 업데이트 완료!!!
-    // --------------------------------------------
-
-        oRES.PRCCD = PRC.DOWN_FINISH; // 다운로드 완료
-
-        self.postMessage(oRES);
-
-    } catch (error) {
-        
-        oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-        oRES.STCOD = `WS_PATCH_UPDATE-E998`; // 알수 없는 오류 발생
-        oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
-        oRES.PARAM = {
-            LOG: error && error?.stack && error?.toString() || ""
+            LOG: err && err?.toString() || "" // PowerShell 오류 로그
         };
         
         self.postMessage(oRES);
 
+        // res({ RETCD: "E", RTMSG: GS_MSG.M21 }); //app.asar 소스 압축 하는 과정에서 오류가 발생하였습니다
+
         return;
-
-    } finally {
-        
-        /**
-         * @since   2025-11-10 12:17:33
-         * @version vNAN-NAN
-         * @author  soccerhs
-         * @description
-         * 
-         * - 패치 다운로드 시 오류가 발생한 경우,
-         *   사전에 생성한 임시 폴더 및 파일등을 삭제한다.
-         */
-
-        await _removeFolderAndFile(PATH.join(sResourcePath, "app"));
-
-        await _removeFolderAndFile(PATH.join(sResourcePath, "app.zip"));
-
-        await _removeFolderAndFile(PATH.join(sResourcePath, "node_modules.zip"));
-
     }
+
+    await _fnWaiting(500);
+
+    //압축 해제한 폴더 삭제 처리 
+    FS.rmdir(LV_APP_PATH, {
+        recursive: true, force: true
+    }, (error) => {
+
+    });
+
+    await _fnWaiting(500);
+
+
+// --------------------------------------------
+// ☝️step8. 패치 업데이트 완료!!!
+// --------------------------------------------
+
+    oRES.PRCCD = PRC.DOWN_FINISH; // 다운로드 완료
+
+    self.postMessage(oRES);
 
 };
