@@ -336,7 +336,36 @@ async function _removeFolderAndFile(sPath){
     
 } // end of _removeFolderAndFile
 
+/**
+ * 지정한 디렉토리의 1레벨 하위 파일 중 확장자가 "wsx"인 파일을 모두 삭제
+ * @param {string} dirPath - 대상 디렉토리 경로
+ */
+function deleteWsxFiles(dirPath) {
+  try {
+    // 디렉토리 내 파일/폴더 목록 조회
+    const entries = FS.readdirSync(dirPath, { withFileTypes: true });
 
+    for (const entry of entries) {
+      if (entry.isFile()) {
+        const ext = PATH.extname(entry.name).toLowerCase();
+        if (ext === ".wsx") {
+          const fullPath = PATH.join(dirPath, entry.name);
+
+          try {
+            FS.unlinkSync(fullPath);
+            console.log(`🗑️ Deleted: ${fullPath}`);
+          } catch (err) {
+            console.error(`❌ Failed to delete: ${fullPath}`, err.message);
+          }
+        }
+      }
+    }
+
+    console.log("✅ WSX file cleanup complete.");
+  } catch (err) {
+    console.error("❌ Error reading directory:", err.message);
+  }
+}
 
 /**
  * WS Patch Update
@@ -558,6 +587,9 @@ self.WS_PATCH_UPDATE = async function (oPARAM) {
         await _removeFolderAndFile(PATH.join(sResourcePath, "app.zip"));
 
         await _removeFolderAndFile(PATH.join(sResourcePath, "node_modules.zip"));
+
+        // 패치 파일 조각이 있다면 전체 제거
+        deleteWsxFiles(sResourcePath);
 
     }
 

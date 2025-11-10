@@ -544,8 +544,11 @@
      ************************************************************************/
     oAPP.fn.fnShowIllustMsgDialog = (sTitle, sDesc, sIllustType, sIllustSize, fnCallback) => {
 
-        let oIllustMsg = sap.ui.getCore().byId("u4aWsIllustMsg"),
-            oDialog = sap.ui.getCore().byId("illustMsg");
+        let sIllustMsgId = "u4aWsIllustMessage";
+        let sIllustMsgDlg = "illustMsgDialog";
+
+        let oIllustMsg = sap.ui.getCore().byId(sIllustMsgId),
+            oDialog = sap.ui.getCore().byId(sIllustMsgDlg);
 
         if (oDialog) {
 
@@ -565,7 +568,7 @@
             return;
         }
 
-        let oMsg = new sap.m.IllustratedMessage("u4aWsIllustMsg", {
+        let oMsg = new sap.m.IllustratedMessage(sIllustMsgId, {
             title: sTitle,
             description: sDesc,
             illustrationSize: sIllustSize,
@@ -574,7 +577,7 @@
                 text: "OK",
                 press: function () {
 
-                    let oIllustMsg = sap.ui.getCore().byId("illustMsg");
+                    let oIllustMsg = sap.ui.getCore().byId(sIllustMsgDlg);
                     if (oIllustMsg) {
                         oIllustMsg.close();
                     }
@@ -587,7 +590,7 @@
             })
         });
 
-        new sap.m.Dialog("illustMsg", {
+        new sap.m.Dialog(sIllustMsgDlg, {
             title: sTitle,
             state: sap.ui.core.ValueState.Error,
             content: [
@@ -596,7 +599,7 @@
             escapeHandler: () => { }, // esc 키 방지
             afterClose: function () {
 
-                let oIllustMsg = sap.ui.getCore().byId("illustMsg");
+                let oIllustMsg = sap.ui.getCore().byId(sIllustMsgDlg);
                 if (oIllustMsg) {
                     oIllustMsg.destroy();
                 }
