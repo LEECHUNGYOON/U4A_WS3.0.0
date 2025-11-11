@@ -292,6 +292,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
      * **********************************************************************/
+    //#region 📑📑 프로그램 시작!!!!!
     oAPP.fn.fnOnMainStart = async () => {
 
         oAPP.setBusy(true);
@@ -331,6 +332,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         CURRWIN.focus();
 
     }; // end of oAPP.fn.fnOnMainStart
+    //#endregion 📑📑 프로그램 시작!!!!!
 
 
     /************************************************************************
@@ -2304,33 +2306,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
     } // end of _setSavedServerList
-
-
-
-    /**
-     * @since   2025-11-07 00:50:22
-     * @version vNAN-NAN
-     * @author  soccerhs
-     * @description
-     * 
-     *  서버 리스트의 onAfterRendering
-     * 
-     * 
-     */
-    //#region - 서버리스트 onAfterRendering    
-    oAPP.fn.fnServerListonAfterRendering = function(oEvent){
-
-        console.log("SAPLogonItems ---> onAfterRendering!!");
-
-        let oSrcControl = oEvent.srcControl;
-        let oModel = oSrcControl.getModel();
-
-        // SAPGUI 서버 리스트 정보와 기 저장된 서버 정보 데이터를 동기화
-       _syncSavedServerInfo(oModel);
-
-
-    }; // end of oAPP.fn.fnServerListonAfterRendering
-    //#endregion - 서버리스트 onAfterRendering
 
     /**
      * @since   2025-11-07 11:06:21
