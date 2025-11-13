@@ -15,6 +15,7 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <hook src="hooks/after_prepare/remove_underscore_items.js" type="after_prepare" />
     <icon src="www/img/logo.png" target="installer" />
     <preference name="AppendUserAgent" value="u4a_cordova_electron" />
     <preference name="ElectronSettingsFilePath" value="www/settings/BrowserWindow/BrowserWindow-settings.json" />

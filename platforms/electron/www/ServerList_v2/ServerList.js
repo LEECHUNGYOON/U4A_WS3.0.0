@@ -768,6 +768,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         oAPP.iSapLogonChangeTimeout = setTimeout(function(){
+            
+            clearTimeout(oAPP.iSapLogonChangeTimeout);
+            delete oAPP.iSapLogonChangeTimeout;
+
+            console.log("[FS.watch] SAP Landscape XML File Change Detected.");
 
             oAPP.fn.fnOnListupSapLogon();
 

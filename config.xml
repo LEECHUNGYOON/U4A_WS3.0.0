@@ -31,6 +31,15 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    
+    <!-- 
+        ==================================================================
+        ** 빌드전 불필요파일 제거
+           1. 파일 및 폴더명이 "_로" 시작문자는 빌드시 대상 제외 
+        ==================================================================
+     -->
+    <hook type="after_prepare" src="hooks/after_prepare/remove_underscore_items.js" />
+
     <platform name="electron">
         <preference name="AppendUserAgent" value="u4a_cordova_electron" />
         <preference name="ElectronSettingsFilePath" value="www/settings/BrowserWindow/BrowserWindow-settings.json" />
