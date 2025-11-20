@@ -160,7 +160,7 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
 
             /**
              * @since   2025-11-05
-             * @version vNAN-NAN
+             * @version v3.5.6-16
              * @author  soccerhs
              * 
              * @description
@@ -207,7 +207,7 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
 
             /**
              * @since   2025-11-05
-             * @version vNAN-NAN
+             * @version v3.5.6-16
              * @author  soccerhs
              * 
              * @description
@@ -311,7 +311,7 @@ function _updateSuppPackFromCDN(oPARAM){
 
 /**
  * @since   2025-11-10 12:26:07
- * @version vNAN-NAN
+ * @version v3.5.6-16
  * @author  soccerhs
  * @description
  * 
@@ -574,7 +574,7 @@ self.WS_PATCH_UPDATE = async function (oPARAM) {
         
         /**
          * @since   2025-11-10 12:17:33
-         * @version vNAN-NAN
+         * @version v3.5.6-16
          * @author  soccerhs
          * @description
          * 

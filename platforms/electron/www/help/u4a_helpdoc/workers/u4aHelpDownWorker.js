@@ -208,7 +208,7 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
 
             /**
              * @since   2025-11-05
-             * @version vNAN-NAN
+             * @version v3.5.6-16
              * @author  soccerhs
              * 
              * @description
@@ -258,7 +258,7 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
 
             /**
              * @since   2025-11-05
-             * @version vNAN-NAN
+             * @version v3.5.6-16
              * @author  soccerhs
              * 
              * @description

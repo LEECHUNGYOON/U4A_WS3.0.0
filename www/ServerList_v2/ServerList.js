@@ -712,7 +712,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             /**
              * @since   2025-11-09 22:17:55
-             * @version vNAN-NAN
+             * @version v3.5.6-16
              * @author  soccerhs
              * @description
              *  기존에 watch 이벤트가 등록되어 있을 경우에는
@@ -752,7 +752,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         /**
          * @since   2025-11-09 22:10:52
-         * @version vNAN-NAN
+         * @version v3.5.6-16
          * @author  soccerhs
          * @description
          * 
@@ -1754,7 +1754,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         /**
          * @since   2025-11-07 09:57:20
-         * @version vNAN-NAN
+         * @version v3.5.6-16
          * @author  soccerhs
          * @description
          *  기 저장된 서버 정보를 구해서 서버리스트에 active 표시 처리 로직을
@@ -2172,7 +2172,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     /**
      * @since   2025-11-07 00:50:44
-     * @version vNAN-NAN
+     * @version v3.5.6-16
      * @author  soccerhs
      * @description
      * 
@@ -2227,7 +2227,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     /**
      * @since   2025-11-07 11:53:55
-     * @version vNAN-NAN
+     * @version v3.5.6-16
      * @author  soccerhs
      * @description
      * 
@@ -2314,7 +2314,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     /**
      * @since   2025-11-07 11:06:21
-     * @version vNAN-NAN
+     * @version v3.5.6-16
      * @author  soccerhs
      * @description
      * 

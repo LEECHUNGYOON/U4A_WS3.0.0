@@ -46,7 +46,7 @@ param (
 
     # ──────────────────────────────────────── *
     # @since   2025-11-10 11:01:47
-    # @version vNAN-NAN
+    # @version v3.5.6-16
     # @author  soccerhs
     # @description
     # 
@@ -84,7 +84,7 @@ $logPrefix = "U4A_WS_MAJOR";
 
 # ──────────────────────────────────────── *
 # @since   2025-11-10 11:13:13
-# @version vNAN-NAN
+# @version v3.5.6-16
 # @author  soccerhs
 # @description
 # 
@@ -258,7 +258,7 @@ function Test-UrlConnectivity {
 
 # ──────────────────────────────────────── *
 # @since   2025-11-03 11:21:37
-# @version vNAN-NAN
+# @version v3.5.6-16
 # @author  soccerhs
 # @description
 #
@@ -435,7 +435,7 @@ try {
 
         # ──────────────────────────────────────── *
         # @since   2025-11-10 11:39:34
-        # @version vNAN-NAN
+        # @version v3.5.6-16
         # @author  soccerhs
         # @description
         # 
@@ -465,7 +465,7 @@ try {
             
             # ──────────────────────────────────────── *
             # @since   2025-11-10 11:30:06
-            # @version vNAN-NAN
+            # @version v3.5.6-16
             # @author  soccerhs
             # @description
             # 
