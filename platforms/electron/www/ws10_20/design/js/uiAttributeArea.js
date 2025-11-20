@@ -5455,10 +5455,36 @@
 
         }
 
-        //appcontainer의 프로퍼티인경우.
-        if(is_attr.UIATK === "EXT00000031" ||  //AppDescript
-          is_attr.UIATK === "EXT00000032" ||  //height
-          is_attr.UIATK === "EXT00000033" ){  //width
+
+        /**
+         * @since   2025-11-19 16:56:10
+         * @version 3.5.6-16
+         * @author  pes
+         * @description
+         * appContainer의 width, hight 프로퍼티의 바인딩 처리를 
+         * 가능하게 하기위한 기존 로직 주석 처리.
+         * (sap.ui.core.HTML으로 재사용 어플리케이션을 화면에 구성하던
+         * 버전에서는 width, height 프로퍼티 속성이 변경되면 재사용 영역이
+         * 초기화 되는 현상때문에 바인딩 처리를 막았으나, u4a.m.UsageArea으로 
+         * 라이브러리화 하여 재사용 어플리케이션을 구성하게 되면서 해당 현상이
+         * 발생하지 않으므로 바인딩 처리를 허용함.)
+         */
+        // //appcontainer의 프로퍼티인경우.
+        // if(is_attr.UIATK === "EXT00000031" ||  //AppDescript
+        //   is_attr.UIATK === "EXT00000032" ||  //height
+        //   is_attr.UIATK === "EXT00000033" ){  //width
+
+        //   //상세보기 아이콘 처리.
+        //   is_attr.icon1_src = undefined;
+        //   is_attr.icon2_src = undefined;
+        //   is_attr.icon1_visb = false;
+        //   is_attr.icon2_visb = false;
+        //   return;
+
+        // }
+
+        //appcontainer의 description 프로퍼티 icon 비활성 처리.
+        if(is_attr.UIATK === "EXT00000031" ){ //AppDescript
 
           //상세보기 아이콘 처리.
           is_attr.icon1_src = undefined;
@@ -5468,6 +5494,22 @@
           return;
 
         }
+
+        //3.5.6-16 버전 패치가 적용된 서버가 아닌경우.
+        if(oAPP.common.checkWLOList("C", "UHAK901253") !== true){
+
+          //기존 로직의 width, height 프로퍼티 바인딩 불가 처리.
+          if(is_attr.UIATK === "EXT00000032" || is_attr.UIATK === "EXT00000033"){
+            //상세보기 아이콘 처리.
+            is_attr.icon1_src = undefined;
+            is_attr.icon2_src = undefined;
+            is_attr.icon1_visb = false;
+            is_attr.icon2_visb = false;
+            return;
+          }
+
+        }
+        /* @version 3.5.6-16 2025-11-19 16:56:10 end */
 
 
         //selectOption2의 F4HelpID, F4HelpReturnFIeld 프로퍼티인경우.
@@ -6534,10 +6576,35 @@
     }
 
 
-    //appcontainer의 프로퍼티인경우.
-    if(is_attr.UIATK === "EXT00000031" ||  //AppDescript
-       is_attr.UIATK === "EXT00000032" ||  //height
-       is_attr.UIATK === "EXT00000033" ){  //width
+    /**
+     * @since   2025-11-19 16:56:10
+     * @version 3.5.6-16
+     * @author  pes
+     * @description
+     * appContainer의 width, hight 프로퍼티의 바인딩 처리를 
+     * 가능하게 하기위한 기존 로직 주석 처리.
+     * (sap.ui.core.HTML으로 재사용 어플리케이션을 화면에 구성하던
+     * 버전에서는 width, height 프로퍼티 속성이 변경되면 재사용 영역이
+     * 초기화 되는 현상때문에 바인딩 처리를 막았으나, u4a.m.UsageArea으로 
+     * 라이브러리화 하여 재사용 어플리케이션을 구성하게 되면서 해당 현상이
+     * 발생하지 않으므로 바인딩 처리를 허용함.)
+     */
+    // //appcontainer의 프로퍼티인경우.
+    // if(is_attr.UIATK === "EXT00000031" ||  //AppDescript
+    //    is_attr.UIATK === "EXT00000032" ||  //height
+    //    is_attr.UIATK === "EXT00000033" ){  //width
+
+    //   //상세보기 아이콘 처리.
+    //   is_attr.icon1_src = undefined;
+    //   is_attr.icon2_src = undefined;
+    //   is_attr.icon1_visb = false;
+    //   is_attr.icon2_visb = false;
+    //   return;
+
+    // }
+
+    //appcontainer의 description 프로퍼티 icon 비활성 처리.
+    if(is_attr.UIATK === "EXT00000031" ){  //AppDescript
 
       //상세보기 아이콘 처리.
       is_attr.icon1_src = undefined;
@@ -6547,6 +6614,22 @@
       return;
 
     }
+
+    //3.5.6-16 버전 패치가 적용된 서버가 아닌경우.
+    if(oAPP.common.checkWLOList("C", "UHAK901253") !== true){
+
+      //기존 로직의 width, height 프로퍼티 바인딩 불가 처리.
+      if(is_attr.UIATK === "EXT00000032" || is_attr.UIATK === "EXT00000033"){
+        //상세보기 아이콘 처리.
+        is_attr.icon1_src = undefined;
+        is_attr.icon2_src = undefined;
+        is_attr.icon1_visb = false;
+        is_attr.icon2_visb = false;
+        return;
+      }
+
+    }
+    /* @version 3.5.6-16 2025-11-19 16:56:10 end */
 
     //selectOption2의 F4HelpID, F4HelpReturnFIeld 프로퍼티인경우.
     if(is_attr.UIATK === "EXT00001188" ||   //F4HelpID
@@ -6722,10 +6805,10 @@
 
 
     //selectOption2의 F4HelpID, F4HelpReturnFIeld 프로퍼티인경우.
-    if(is_attr.UIATK === "EXT00001188" ||   //F4HelpID
-       is_attr.UIATK === "EXT00001189" ||   //F4HelpReturnFIeld
-       is_attr.UIATK === "EXT00001161" ||   //value
-       is_attr.UIATK === "EXT00002507" ){   //value
+    if(is_attr.UIATK === "EXT00001188" ||   //SelectOption2의 F4HelpID
+       is_attr.UIATK === "EXT00001189" ||   //SelectOption2의 F4HelpReturnFIeld
+       is_attr.UIATK === "EXT00001161" ||   //SelectOption2의 value
+       is_attr.UIATK === "EXT00002507" ){   //SelectOption3의 value
 
        return;
     }
