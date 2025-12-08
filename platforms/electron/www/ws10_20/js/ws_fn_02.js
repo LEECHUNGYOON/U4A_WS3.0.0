@@ -10,7 +10,10 @@
         APP = parent.APP,
         CURRWIN = REMOTE.getCurrentWindow(),
         REMOTEMAIN = parent.REMOTEMAIN,
-        APPCOMMON = oAPP.common;  
+        APPCOMMON = oAPP.common;
+
+    // 브라우저 미리보기
+    const { CLBrowserPreview } = parent.require(parent.PATH.join(parent.PATHINFO.JS_ROOT, "utils", "browser_preview"));
 
     /************************************************************************
      * Application Display or Change mode 
@@ -1233,6 +1236,71 @@
 
     }; // end of oAPP.fn.fnExternalOpen
 
+    /**
+     * @since   2025-12-08 14:12:49
+     * @version vNAN-NAN
+     * @author  soccerhs
+     * @description
+     * 
+     * 미리보기 브라우저 실행
+     * 
+     */
+    async function _openBrowserPreview(oParam){
+
+        console.log("fnOnExecApp - 개발 모드 실행!!");
+
+        let oOptions = {
+            url: oParam.URL,
+            launchOptions: {
+                executablePath: oParam.INSPATH,
+                args: [
+                  
+                ]
+            }
+        }
+
+        // 앱모드 일경우 파라미터 argument 추가
+        if(oParam.APP_MODE === true){
+            oOptions.launchOptions.args.push(`--app=${oParam.URL}`);  
+        }
+
+        let oPreview = new CLBrowserPreview(oOptions);
+
+        oPreview.on('action', function(action){
+
+            // 현재 실행 중인 페이지가 WS20번일 경우에만 동작!!!
+
+            console.log("브라우저 미리보기 액션", action);
+
+            oAPP.fn.setSelectTreeItem(action.OBJID, action.UIATK, null);
+
+        });
+
+        oPreview.on('close', function(){
+
+            console.log("브라우저 미리보기 닫힘!!");
+
+        });
+
+        oPreview.on('err', function(error){
+
+            console.log("브라우저 미리보기 실행 중 오류 발생!!");
+
+        });
+
+
+        let oLaunchRes = await oPreview.launchPage();
+        
+
+        
+
+        
+
+
+
+
+    } // end of _openBrowserPreview
+
     /************************************************************************
      * 현재 파일에 저장되어있는 Default Browser 정보 기준으로 어플리케이션 실행한다.
      * **********************************************************************
@@ -1273,6 +1341,20 @@
 
             return;
         }
+
+        // 개발 모드일 경우
+        if(oSelectedBrows?.DEV_MODE === true){
+
+            let oParams = {
+                INSPATH: oSelectedBrows.INSPATH,
+                URL: sPath,
+                APP_MODE: !!oSelectedBrows.APP_MODE 
+            };
+
+            _openBrowserPreview(oParams);
+
+            return;
+        }
         
         // 앱모드로 실행일 경우에는 앱모드 파라미터를 동봉한다.
         if(oSelectedBrows?.APP_MODE === true){
@@ -1289,6 +1371,9 @@
 
     /************************************************************************
      * 현재 파일에 저장되어있는 Default Browser 정보 기준으로 브라우저를 실행한다.
+     * 
+     * ## 사용처 
+     *   - USP 화면에서 실행 버튼
      * **********************************************************************/
     oAPP.fn.fnExeBrowser = (sPath, sParam) => {
 
@@ -1316,6 +1401,19 @@
             // 설치된 브라우저가 없습니다 오류 메시지
             let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
             parent.showMessage(sap, 20, 'E', sMsg);
+
+            return;
+        }
+
+        // 개발 모드일 경우
+        if(oSelectedBrows?.DEV_MODE === true){
+
+            let oParams = {
+                INSPATH: oSelectedBrows.INSPATH,
+                URL: sPath
+            };
+
+            _openBrowserPreview(oParams);
 
             return;
         }

@@ -127,10 +127,7 @@
                     icon: "sap-icon://decline",
                     press: oAPP.events.ev_selectBrowserClose
                 }),
-            ],
-            // content: [
-            //     oVbox
-            // ]
+            ]   
 
         }).addStyleClass("sapUiContentPadding");
 
@@ -202,6 +199,7 @@
 
                 for(var oDEF of aDEFBR){
                     oDEF.APP_MODE = false;
+                    oDEF.DEV_MODE = false;
                 }
 
                 oModel.setProperty("/DEFBR", aDEFBR);
@@ -251,43 +249,27 @@
         });
         oToolbarTemplate.addContent(oTitle1);
 
+        let oVBox2 = new sap.m.VBox();
 
         // 앱모드 사용 유무 체크박스
         let oCheckBox1 = new sap.m.CheckBox({
             text: parent.WSUTIL.getWsMsgClsTxt(oUserInfo.LANGU, "ZMSG_WS_COMMON_001", "281"), // 앱모드 활성            
             selected: "{APP_MODE}"
-        });        
+        });
+        oVBox2.addItem(oCheckBox1);
 
-        oPanelTemplate.addContent(oCheckBox1);
+        oPanelTemplate.addContent(oVBox2);
 
-        // // 앱모드 체크박스에서 SELECTED가 false 인 경우는 무조건 체크 해제
-        // oCheckBox1.bindProperty("selected", {
-        //     parts: [
-        //         { path: "APP_MODE" },
-        //         { path: "SELECTED" }
-        //     ],
-        //     formatter: function(SELECTED, APP_MODE){
-
-        //         if(SELECTED === false){
-        //             return false;
-        //         }
-
-        //         return APP_MODE;
-        //     }
-
-        // });
-        
-        oCheckBox1.bindProperty("enabled", {
+        oCheckBox1.bindProperty("enabled", {                
             parts: [
                 "ENABLED",      // 브라우저 설치 여부
-                "SELECTED"      // 사용 선택 여부
+                "SELECTED",     // 사용 선택 여부
+                "DEV_MODE"   
             ],
-            formatter: function(ENABLED, SELECTED){
+            formatter: function(ENABLED, SELECTED, DEV_MODE){
 
-                if (!ENABLED) {                   
-
+                if (!ENABLED) {
                     this.setSelected(false);
-
                     return false;
                 }
 
@@ -295,21 +277,45 @@
                     return false;
                 }
 
-                return true; 
+                // if(DEV_MODE === true){
+                //     this.setSelected(false);
+                //     return false;
+                // }
 
+                return true;
+            }
+        });  
+
+        let oCheckBox2 = new sap.m.CheckBox({
+            text: "개발 모드",
+            selected: "{DEV_MODE}",
+            visible: !parent.APP.isPackaged
+        });
+
+        oVBox2.addItem(oCheckBox2);
+
+        oCheckBox2.bindProperty("enabled", {                
+            parts: [
+                "ENABLED",      // 브라우저 설치 여부
+                "SELECTED",     // 사용 선택 여부                    
+            ],
+            formatter: function(ENABLED, SELECTED){
+
+                if (!ENABLED) {
+                    this.setSelected(false);
+                    return false;
+                }
+
+                if(SELECTED === false){
+                    return false;
+                }
+
+                return true;
             }
         });
 
-          // 브라우저 설치 유무에 따른 UI 활성 비활성 처리
-        // oCheckBox1.bindProperty("enabled", "ENABLED", function(values) {
+        // oPanelTemplate.addContent(oCheckBox2);
 
-        //     if (!values) {
-        //         this.setSelected(values);
-        //     }
-
-        //     return values;
-
-        // });
 
         let oVBox1 = new sap.m.VBox({
             renderType: "Bare",
@@ -349,7 +355,7 @@
 
         oP13nData[sSysID].DEFBR = APPCOMMON.fnGetModelProperty("/DEFBR");
 
-        FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
+        FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));        
 
         oEvent.getSource().getParent().close();
 

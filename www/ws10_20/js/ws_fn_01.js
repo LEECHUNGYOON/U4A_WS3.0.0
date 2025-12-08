@@ -3158,6 +3158,7 @@
             oBrowsStatus.NAME = oBrows.NAME;
             oBrowsStatus.DESC = oBrows.DESC;
             oBrowsStatus.APP_MODE = oBrows.APP_MODE;
+            oBrowsStatus.DEV_MODE = oBrows.DEV_MODE;
 
             // 브라우저 설치 유무 확인
             var bIsExist = false;
@@ -3248,6 +3249,7 @@
                 let oFind = aBeforeInfo.find(e => e.NAME === oCurrBrows.NAME);
                 if(oFind){
                     oCurrBrows.APP_MODE = oFind.APP_MODE;
+                    oCurrBrows.DEV_MODE = oFind.DEV_MODE;
                 }
 
             }
