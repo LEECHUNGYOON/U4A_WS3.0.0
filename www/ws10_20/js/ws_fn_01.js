@@ -177,6 +177,38 @@
 
                 }
 
+                // debugger;
+
+                // let strParam = function (oEvtParams){
+                // debugger;
+                //     var bb = {};
+
+                //     for(var i in oEvtParams){
+                        
+                //         switch(typeof oEvtParams[i]){
+                //             case "string":
+                //             case "number":
+                //             case "boolean":
+                //             bb[i] = oEvtParams[i]
+                //             continue;
+
+                //             default:
+                //             break;
+                //         }
+
+                //     }
+
+                //     return bb;
+                // }
+
+                // let oEvtParams = oEvent.getParameters();
+                // let oCommandParams = {
+                    
+                // }
+
+                // let oIpcHandler = new parent.CLIpcHandler();
+                    oIpcHandler.command("naviTo", );
+
             }
 
         }).addStyleClass("u4aWsApp sapUiSizeCompact");

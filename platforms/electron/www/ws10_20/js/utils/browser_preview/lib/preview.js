@@ -85,6 +85,7 @@ class CLBrowserPreview extends EventEmitter {
      * [내부] 브라우저 주입 스크립트 (이벤트 감지 로직 포함)
      */
     _getInjectionScript() {
+        
         return function() {
 
             // [중복 실행 방지]
@@ -216,14 +217,21 @@ class CLBrowserPreview extends EventEmitter {
                 bIsAppMode = aLaunchArgs.some(arg => arg.startsWith("--app="));
             }
 
-            // 앱 모드면 기존 페이지 가져오기, 아니면 새 페이지 생성
-            if(bIsAppMode){
-                const pages = await this.browser.pages();
-                this.page = pages[0]; // 앱 모드에서는 첫 번째 페이지 사용
-            } else {
-                this.page = await this.browser.newPage();
-                await this.page.goto(this.option.url);
+            const aPages = await this.browser.pages();
+
+            var page = aPages[0];
+            if(!page){
+                page = await browser.newPage();
             }
+
+            // // 앱 모드면 기존 페이지 가져오기, 아니면 새 페이지 생성
+            // if(bIsAppMode){
+            //     const pages = await this.browser.pages();
+            //     this.page = pages[0]; // 앱 모드에서는 첫 번째 페이지 사용
+            // } else {
+            //     this.page = await this.browser.newPage();
+            //     await this.page.goto(this.option.url);
+            // }
 
             this._registerPuppeteerListeners();
 

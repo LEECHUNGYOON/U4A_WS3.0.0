@@ -1,4 +1,4 @@
 {
     "name": "browser-preview",
-    "main": "main.js"
+    "main": "index.js"
 }

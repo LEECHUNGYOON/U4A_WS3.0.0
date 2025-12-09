@@ -7160,6 +7160,13 @@
             }, 0);            
 
         }
+        
+        if (pIS_ACT === "X") {
+
+            let oIpcHandler = new parent.CLIpcHandler();
+                oIpcHandler.command("active", { fromPage: parent.getCurrPage(), SESSID: "aaaa" });
+
+        }
 
     } // end of _fnSaveCallback
 

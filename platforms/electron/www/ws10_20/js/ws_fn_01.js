@@ -177,6 +177,16 @@
 
                 }
 
+                debugger;
+
+                let oEvtParams = oEvent.getParameters();
+                let oCommandParams = {
+                    
+                }
+
+                let oIpcHandler = new parent.CLIpcHandler();
+                    oIpcHandler.command("naviTo", );
+
             }
 
         }).addStyleClass("u4aWsApp sapUiSizeCompact");

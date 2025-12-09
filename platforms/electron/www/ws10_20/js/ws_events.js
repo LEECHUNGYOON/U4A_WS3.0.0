@@ -1304,7 +1304,7 @@
     oAPP.events.ev_pressActivateBtn = async function (oEvent) {
         
         // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");        
+        oAPP.common.fnSetBusyLock("X");
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -1507,9 +1507,7 @@
 
             oAppInfo = jQuery.extend(true, {}, parent.getAppInfo());
 
-            APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
-
-           
+            APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);           
 
             //undo, redo 이력 초기화.
             parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
@@ -1518,8 +1516,6 @@
             parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
 
             oAPP.attr.oModel.refresh();
-
-
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
@@ -1537,6 +1533,10 @@
                 }, 0);            
 
             }
+
+            // active 이벤트 전파
+            let oIpcHandler = new parent.CLIpcHandler();
+                oIpcHandler.command("active", { fromPage: parent.getCurrPage(), SESSID: "aaaa" });
 
         });
 

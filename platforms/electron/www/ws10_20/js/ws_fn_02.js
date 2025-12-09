@@ -1290,13 +1290,8 @@
 
 
         let oLaunchRes = await oPreview.launchPage();
-        
 
-        
-
-        
-
-
+        console.log("브라우저 미리보기 종료!!");
 
 
     } // end of _openBrowserPreview
