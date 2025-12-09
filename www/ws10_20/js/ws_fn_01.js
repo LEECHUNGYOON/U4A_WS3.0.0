@@ -177,37 +177,27 @@
 
                 }
 
-                // debugger;
 
-                // let strParam = function (oEvtParams){
-                // debugger;
-                //     var bb = {};
+                // Navcontainer의 afterNavi 파라미터를 전달해준다.
+                let oEvtParams = oEvent.getParameters();
 
-                //     for(var i in oEvtParams){
-                        
-                //         switch(typeof oEvtParams[i]){
-                //             case "string":
-                //             case "number":
-                //             case "boolean":
-                //             bb[i] = oEvtParams[i]
-                //             continue;
+                let oCommandParams = {
+                    direction   : oEvtParams.direction,
+                    firstTime   : oEvtParams.firstTime,
+                    fromId      : oEvtParams.fromId,
+                    isBack      : oEvtParams.isBack,
+                    isBackToPage: oEvtParams.isBackToPage,
+                    isBackToTop : oEvtParams.isBackToTop,
+                    isTo        : oEvtParams.isTo,
+                    toId        : oEvtParams.toId,
 
-                //             default:
-                //             break;
-                //         }
+                    browserKey: parent.getBrowserKey(),
+                    sessionKey: parent.getSessionKey()
+                };
 
-                //     }
-
-                //     return bb;
-                // }
-
-                // let oEvtParams = oEvent.getParameters();
-                // let oCommandParams = {
-                    
-                // }
-
-                // let oIpcHandler = new parent.CLIpcHandler();
-                    oIpcHandler.command("naviTo", );
+                // ipc 이벤트 command 전송
+                let oIpcHandler = new parent.CLIpcHandler();
+                    oIpcHandler.command("naviTo", oCommandParams);
 
             }
 

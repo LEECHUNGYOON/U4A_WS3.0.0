@@ -12,4 +12,4 @@ const { CLBrowserPreview } = require("./lib/preview");
 
 
 
-module.exports = {};
+module.exports = { CLBrowserPreview };

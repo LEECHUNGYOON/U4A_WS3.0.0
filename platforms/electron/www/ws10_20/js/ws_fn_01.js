@@ -177,15 +177,27 @@
 
                 }
 
-                debugger;
 
+                // Navcontainer의 afterNavi 파라미터를 전달해준다.
                 let oEvtParams = oEvent.getParameters();
-                let oCommandParams = {
-                    
-                }
 
+                let oCommandParams = {
+                    direction   : oEvtParams.direction,
+                    firstTime   : oEvtParams.firstTime,
+                    fromId      : oEvtParams.fromId,
+                    isBack      : oEvtParams.isBack,
+                    isBackToPage: oEvtParams.isBackToPage,
+                    isBackToTop : oEvtParams.isBackToTop,
+                    isTo        : oEvtParams.isTo,
+                    toId        : oEvtParams.toId,
+
+                    browserKey: parent.getBrowserKey(),
+                    sessionKey: parent.getSessionKey()
+                };
+
+                // ipc 이벤트 command 전송
                 let oIpcHandler = new parent.CLIpcHandler();
-                    oIpcHandler.command("naviTo", );
+                    oIpcHandler.command("naviTo", oCommandParams);
 
             }
 
