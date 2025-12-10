@@ -2300,7 +2300,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         try {
 
-            FS.writeFileSync(sJsonPath, JSON.stringify(aSaveServerData), 'utf-8');
+            FS.writeFileSync(sJsonPath, JSON.stringify(aSaveServerData, null, 2), 'utf-8');
 
             return {
                 RETCD: "S"
@@ -2400,12 +2400,24 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                 label: new sap.m.Label({
                                     required: false,
                                     design: "Bold",
-                                    text: "use Internal"
+                                    text: "Use Internal"
                                 }),
                                 fields: new sap.m.CheckBox({
                                     selected: "{/settings/useInternal}"
                                 })
                             }),
+
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    required: false,
+                                    design: "Bold",
+                                    text: "Skip Certificate"
+                                }),
+                                fields: new sap.m.CheckBox({
+                                    selected: "{/settings/skipCertificate}"
+                                })
+                            }),
+                        
                         
 
                         ] // end of formElements
@@ -3087,6 +3099,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      * Author: CHUNGYOON LEE
      * Revised on: 2025-11-07
      */
+    /**
+     * @since   2025-11-07 17:35:41
+     * @version v3.5.6-16
+     * @author  soccerhs
+     * @description
+     * 
+     * 서버 정보 입력값을 검증하고 로컬 JSON 파일에 저장하는 함수
+     * 
+     */
     //#region - 서버 리스트 저장  
     oAPP.fn.fnPressSave = async () => {
 
@@ -3116,7 +3137,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             protocol: oData.SAVEDATA.protocol,
             host: oData.SAVEDATA.host,
             port: oData.SAVEDATA.port,
-            settings: { useInternal: !!oData.SAVEDATA.useInternal }
+            settings: { 
+                useInternal: !!oData.SAVEDATA.useInternal,
+                skipCertificate: !!oData.SAVEDATA.skipCertificate,
+            }
         };
 
         const sJsonPath = PATHINFO.SERVERINFO_V2 || "";

@@ -784,9 +784,23 @@ function _getPatchUpdateFileWorker(oPARAM){
         ND_DOWN_PATH  : sNdDownPath,
         FILE_INFO     : oFileInfo,
         RESOURCE_PATH : sResourcePath,
-        ISCDN         : ISCDN,               // CDN 여부
-        LOG_FLD_PATH  : sLogFolderPath
+        ISCDN         : ISCDN,              // CDN 여부
+        LOG_FLD_PATH  : sLogFolderPath,     // 파워쉘 로그 저장 폴더 경로
+        SKIP_CERT     : false               // https 인증서 오류 회피
     };
+
+    /**
+     * @since   2025-12-10 17:57:03
+     * @version vNAN-NAN
+     * @author  soccerhs
+     * @description
+     * 
+     * https 인증서 오류 회피 옵션 추가
+     * 
+     */
+    if(oServerSettings && oServerSettings.skipCertificate === true){
+        _oPARAM.SKIP_CERT = true;
+    }
 
     // 공통 IF 구조
     let oIF_DATA = JSON.parse(JSON.stringify(TY_IFDATA));

@@ -257,7 +257,14 @@ class CLBrowserPreview extends EventEmitter {
         }
 
         return { RETCD: 'S' };
-    }    
+    } 
+    
+    
+    async close (){
+
+        console.log("launch close");
+
+    }
 
 }
 

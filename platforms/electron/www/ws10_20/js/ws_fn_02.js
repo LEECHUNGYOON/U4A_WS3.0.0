@@ -1247,10 +1247,7 @@
      */
     async function _openBrowserPreview(oParam){
 
-        debugger;
-
-        
-        let oOptions = {
+        let oBrowserOptions = {
             url: oParam.URL,
             launchOptions: {
                 executablePath: oParam.INSPATH,
@@ -1262,10 +1259,16 @@
 
         // 앱모드 일경우 파라미터 argument 추가
         if(oParam.APP_MODE === true){
-            oOptions.launchOptions.args.push(`--app=${oParam.URL}`);  
+            oBrowserOptions.launchOptions.args.push(`--app=${oParam.URL}`);  
         }
 
-       parent.require(parent.PATH.join(parent.PATHINFO.JS_ROOT, "utils", "browser_preview"))(oOptions);
+
+        let oParams = {
+            browserOptions: oBrowserOptions,
+            oAPP : oAPP
+        };
+
+       parent.require(parent.PATH.join(parent.PATHINFO.JS_ROOT, "utils", "browser_preview"))(oParams);
 
 
         // console.log("fnOnExecApp - 개발 모드 실행!!");
@@ -1303,6 +1306,80 @@
     } // end of _openBrowserPreview
 
     /************************************************************************
+     * 브라우저를 실행하는 공통 함수
+     * @param {string} sUrl - 실행할 URL
+     * @returns {boolean} - 성공 여부
+     * **********************************************************************/
+    oAPP.fn.fnLaunchBrowser = function(sUrl) {
+
+        console.log("fnLaunchBrowser");
+        
+        // 기본 브라우저 설정        
+        oAPP.fn.fnOnInitP13nSettings();
+
+        var SPAWN = parent.SPAWN,
+            aComm = [];
+
+        var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
+            oSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
+
+        // 브라우저 정보 검증
+        if (!oSelectedBrows || !oSelectedBrows?.INSPATH) {
+            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333");
+            parent.showMessage(sap, 20, 'E', sMsg);
+            return false;
+        }
+
+        // 앱모드 처리
+        if (oSelectedBrows?.APP_MODE === true) {
+            sUrl = `--app=${sUrl}`;
+        }
+
+        aComm.push(sUrl);
+        SPAWN(oSelectedBrows.INSPATH, aComm, { detached: true });
+        
+        return true;
+    };
+
+    /************************************************************************
+     * U4A 앱 실행
+     * @param {string} APPID - 실행할 앱 ID
+     * @param {boolean} bIsMulti - 멀티 프리뷰 모드 여부
+     * **********************************************************************/
+    oAPP.fn.fnOnExecApp = function(APPID, bIsMulti) {
+        
+        APPID = APPID.toLowerCase();
+
+        var oServerInfo = parent.getServerInfo(),
+            sHost = parent.getHost(),
+            sPath = `${sHost}/zu4a/${APPID}?sap-language=${oServerInfo.LANGU}&sap-client=${oServerInfo.CLIENT}`;
+
+        if (bIsMulti) {
+            sPath = `${sHost}/zu4a_imp/ui5multipreview?ws-platform=3.0&applid=${APPID}`;
+        }
+
+        oAPP.fn.fnLaunchBrowser(sPath);
+    };
+
+    /************************************************************************
+     * 현재 파일에 저장되어있는 Default Browser 정보 기준으로 브라우저를 실행한다.
+     * @param {string} sPath - 실행할 경로 (호스트 제외)
+     * @param {string} sParam - 추가 URL 파라미터 (옵션)
+     * **********************************************************************/
+    oAPP.fn.fnExeBrowser = (sPath, sParam) => {
+        
+        var oServerInfo = parent.getServerInfo(),
+            sHost = parent.getHost(),
+            sUrl = `${sHost}${sPath}?sap-client=${oServerInfo.CLIENT}&sap-language=${oServerInfo.LANGU}`;
+
+        if (typeof sParam == "string") {
+            sUrl += `&${sParam}`;
+        }
+
+        oAPP.fn.fnLaunchBrowser(sUrl);
+    };
+
+    /************************************************************************
      * 현재 파일에 저장되어있는 Default Browser 정보 기준으로 어플리케이션 실행한다.
      * **********************************************************************
      * @param {String} APPID  
@@ -1312,125 +1389,125 @@
      * - true: Multi Preview로 실행
      * - false: 기본 브라우저 실행  
      ************************************************************************/
-    oAPP.fn.fnOnExecApp = function (APPID, bIsMulti) {
+    // oAPP.fn.fnOnExecApp = function (APPID, bIsMulti) {
         
-        // 기본 브라우저 설정        
-        oAPP.fn.fnOnInitP13nSettings(); // [ws_fn_01.js]
+    //     // 기본 브라우저 설정        
+    //     oAPP.fn.fnOnInitP13nSettings(); // [ws_fn_01.js]
 
-        var SPAWN = parent.SPAWN, // pc 제어하는 api
-            aComm = []; // 명령어 수집
+    //     var SPAWN = parent.SPAWN, // pc 제어하는 api
+    //         aComm = []; // 명령어 수집
 
-        APPID = APPID.toLowerCase(); // APPID를 대문자로 변환
+    //     APPID = APPID.toLowerCase(); // APPID를 대문자로 변환
 
-        // 실행시킬 호스트명 + U4A URL 만들기   
-        var oServerInfo = parent.getServerInfo(),
-            sHost = parent.getHost(),
-            sPath = `${sHost}/zu4a/${APPID}?sap-language=${oServerInfo.LANGU}&sap-client=${oServerInfo.CLIENT}`;
+    //     // 실행시킬 호스트명 + U4A URL 만들기   
+    //     var oServerInfo = parent.getServerInfo(),
+    //         sHost = parent.getHost(),
+    //         sPath = `${sHost}/zu4a/${APPID}?sap-language=${oServerInfo.LANGU}&sap-client=${oServerInfo.CLIENT}`;
 
-        if (bIsMulti) {
-            sPath = `${sHost}/zu4a_imp/ui5multipreview?ws-platform=3.0&applid=${APPID}`;
-        }
+    //     if (bIsMulti) {
+    //         sPath = `${sHost}/zu4a_imp/ui5multipreview?ws-platform=3.0&applid=${APPID}`;
+    //     }
 
-        var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
-            oSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
+    //     var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
+    //         oSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
 
-        if (!oSelectedBrows || !oSelectedBrows?.INSPATH) {
+    //     if (!oSelectedBrows || !oSelectedBrows?.INSPATH) {
 
-            // 설치된 브라우저가 없습니다 오류 메시지
-            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
-            parent.showMessage(sap, 20, 'E', sMsg);
+    //         // 설치된 브라우저가 없습니다 오류 메시지
+    //         let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
+    //         parent.showMessage(sap, 20, 'E', sMsg);
 
-            return;
-        }
+    //         return;
+    //     }
 
-        // 개발 모드일 경우
-        if(oSelectedBrows?.DEV_MODE === true){
+    //     // 개발 모드일 경우
+    //     if(oSelectedBrows?.DEV_MODE === true){
 
-            let oParams = {
-                INSPATH: oSelectedBrows.INSPATH,
-                URL: sPath,
-                APP_MODE: !!oSelectedBrows.APP_MODE 
-            };
+    //         let oParams = {
+    //             INSPATH: oSelectedBrows.INSPATH,
+    //             URL: sPath,
+    //             APP_MODE: !!oSelectedBrows.APP_MODE 
+    //         };
 
-            _openBrowserPreview(oParams);
+    //         _openBrowserPreview(oParams);
 
-            return;
-        }
+    //         return;
+    //     }
         
-        // 앱모드로 실행일 경우에는 앱모드 파라미터를 동봉한다.
-        if(oSelectedBrows?.APP_MODE === true){
-            sPath = `--app=${sPath}`;
-        }
+    //     // 앱모드로 실행일 경우에는 앱모드 파라미터를 동봉한다.
+    //     if(oSelectedBrows?.APP_MODE === true){
+    //         sPath = `--app=${sPath}`;
+    //     }
 
-        // 실행전 명령어 수집
-        aComm.push(sPath);
+    //     // 실행전 명령어 수집
+    //     aComm.push(sPath);
 
-        // APP 실행		
-        SPAWN(oSelectedBrows.INSPATH, aComm, { detached: true });
+    //     // APP 실행		
+    //     SPAWN(oSelectedBrows.INSPATH, aComm, { detached: true });
 
-    }; // end of oAPP.fn.fnOnExecApp
+    // }; // end of oAPP.fn.fnOnExecApp
 
-    /************************************************************************
-     * 현재 파일에 저장되어있는 Default Browser 정보 기준으로 브라우저를 실행한다.
-     * 
-     * ## 사용처 
-     *   - USP 화면에서 실행 버튼
-     * **********************************************************************/
-    oAPP.fn.fnExeBrowser = (sPath, sParam) => {
+    // /************************************************************************
+    //  * 현재 파일에 저장되어있는 Default Browser 정보 기준으로 브라우저를 실행한다.
+    //  * 
+    //  * ## 사용처 
+    //  *   - USP 화면에서 실행 버튼
+    //  * **********************************************************************/
+    // oAPP.fn.fnExeBrowser = (sPath, sParam) => {
 
-        // 기본 브라우저 설정        
-        oAPP.fn.fnOnInitP13nSettings();
+    //     // 기본 브라우저 설정        
+    //     oAPP.fn.fnOnInitP13nSettings();
 
-        var SPAWN = parent.SPAWN, // pc 제어하는 api
-            aComm = []; // 명령어 수집
+    //     var SPAWN = parent.SPAWN, // pc 제어하는 api
+    //         aComm = []; // 명령어 수집
 
-        var oServerInfo = parent.getServerInfo(),
-            sHost = parent.getHost(),
-            sUrl = `${sHost}${sPath}`;
+    //     var oServerInfo = parent.getServerInfo(),
+    //         sHost = parent.getHost(),
+    //         sUrl = `${sHost}${sPath}`;
 
-        sUrl += `?sap-client=${oServerInfo.CLIENT}&sap-language=${oServerInfo.LANGU}`;
+    //     sUrl += `?sap-client=${oServerInfo.CLIENT}&sap-language=${oServerInfo.LANGU}`;
 
-        if (typeof sParam == "string") {
-            sUrl += `&${sParam}`;
-        }
+    //     if (typeof sParam == "string") {
+    //         sUrl += `&${sParam}`;
+    //     }
 
-        var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
-            oSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
+    //     var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
+    //         oSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
 
-        if (!oSelectedBrows || !oSelectedBrows?.INSPATH) {
+    //     if (!oSelectedBrows || !oSelectedBrows?.INSPATH) {
 
-            // 설치된 브라우저가 없습니다 오류 메시지
-            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
-            parent.showMessage(sap, 20, 'E', sMsg);
+    //         // 설치된 브라우저가 없습니다 오류 메시지
+    //         let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
+    //         parent.showMessage(sap, 20, 'E', sMsg);
 
-            return;
-        }
+    //         return;
+    //     }
 
-        // 개발 모드일 경우
-        if(oSelectedBrows?.DEV_MODE === true){
+    //     // 개발 모드일 경우
+    //     if(oSelectedBrows?.DEV_MODE === true){
 
-            let oParams = {
-                INSPATH: oSelectedBrows.INSPATH,
-                URL: sPath
-            };
+    //         let oParams = {
+    //             INSPATH: oSelectedBrows.INSPATH,
+    //             URL: sPath
+    //         };
 
-            _openBrowserPreview(oParams);
+    //         _openBrowserPreview(oParams);
 
-            return;
-        }
+    //         return;
+    //     }
 
-        // 앱모드로 실행일 경우에는 앱모드 파라미터를 동봉한다.
-        if(oSelectedBrows?.APP_MODE === true){
-            sUrl = `--app=${sUrl}`;
-        }
+    //     // 앱모드로 실행일 경우에는 앱모드 파라미터를 동봉한다.
+    //     if(oSelectedBrows?.APP_MODE === true){
+    //         sUrl = `--app=${sUrl}`;
+    //     }
 
-        // 실행전 명령어 수집
-        aComm.push(sUrl);
+    //     // 실행전 명령어 수집
+    //     aComm.push(sUrl);
 
-        // APP 실행		
-        SPAWN(oSelectedBrows.INSPATH, aComm, { detached: true });
+    //     // APP 실행		
+    //     SPAWN(oSelectedBrows.INSPATH, aComm, { detached: true });
 
-    }; // end of oAPP.fn.fnExeBrowser
+    // }; // end of oAPP.fn.fnExeBrowser
 
     /************************************************************************
      * APP SearchHelp의 App List Table Object Return

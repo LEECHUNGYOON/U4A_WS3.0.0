@@ -297,6 +297,84 @@ function Wait-ForFile {
 
 # Main execution block
 try {
+
+    # ──────────────────────────────────────── *
+    # @since   2025-12-10 17:48:16
+    # @version vNAN-NAN
+    # @author  soccerhs
+    # @description
+    # 
+    #  - https 인증서 오류 관련 회피 예외 로직
+    #  - SkipCertificateCheck 파라미터 처리
+    #
+    # ──────────────────────────────────────── *
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "  SAP U4A Patch Download Script" -ForegroundColor Cyan
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host ""
+    
+    Write-Log -Type "I" -Message "========== Script Started =========="
+    Write-Log -Type "I" -Message "BaseUrl: $BaseUrl"
+    Write-Log -Type "I" -Message "PowerShell Version: $($PSVersionTable.PSVersion)"
+
+    if ($SkipCertificateCheck) {
+        Write-Host "⚠ SSL Certificate Validation: DISABLED" -ForegroundColor Yellow
+        Write-Log -Type "I" -Message "SSL Certificate Validation Disabled (SkipCertificateCheck)"
+        
+        # Windows PowerShell 5.1 이하
+        if ($PSVersionTable.PSVersion.Major -lt 6) {
+            Write-Host "Applying SSL/TLS settings for Windows PowerShell..." -ForegroundColor Yellow
+            
+            # 인증서 검증 완전히 무시
+            [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { 
+                param($sender, $certificate, $chain, $sslPolicyErrors)
+                return $true 
+            }
+            
+            # 모든 TLS 버전 활성화
+            $protocols = @()
+            $protocols += [Net.SecurityProtocolType]::Tls
+            $protocols += [Net.SecurityProtocolType]::Tls11
+            $protocols += [Net.SecurityProtocolType]::Tls12
+            
+            # TLS 1.3 지원 확인
+            try {
+                $tls13 = [Net.SecurityProtocolType]::Tls13
+                $protocols += $tls13
+            }
+            catch {
+                Write-Host "  TLS 1.3 not supported on this system" -ForegroundColor Gray
+            }
+            
+            [Net.ServicePointManager]::SecurityProtocol = $protocols -join ', '
+            
+            # 추가 설정
+            [System.Net.ServicePointManager]::Expect100Continue = $false
+            [System.Net.ServicePointManager]::CheckCertificateRevocationList = $false
+            [System.Net.ServicePointManager]::MaxServicePointIdleTime = 30000
+            [System.Net.ServicePointManager]::DefaultConnectionLimit = 50
+            
+            Write-Host "  SecurityProtocol: $([Net.ServicePointManager]::SecurityProtocol)" -ForegroundColor Green
+            Write-Host "  Expect100Continue: $([System.Net.ServicePointManager]::Expect100Continue)" -ForegroundColor Green
+            Write-Host "  CheckCertificateRevocationList: $([System.Net.ServicePointManager]::CheckCertificateRevocationList)" -ForegroundColor Green
+            
+            Write-Log -Type "I" -Message "SecurityProtocol: $([Net.ServicePointManager]::SecurityProtocol)"
+        }
+        # PowerShell Core 6.0 이상
+        else {
+            Write-Host "Using SkipCertificateCheck parameter (PowerShell Core)" -ForegroundColor Yellow
+            Write-Log -Type "I" -Message "Using SkipCertificateCheck parameter (PowerShell $($PSVersionTable.PSVersion.Major))"
+        }
+    }
+    else {
+        Write-Host "✓ SSL Certificate Validation: ENABLED" -ForegroundColor Green
+        Write-Log -Type "I" -Message "SSL Certificate Validation Enabled"
+    }
+
+    # ✅ 설정 적용을 위한 짧은 대기
+    Start-Sleep -Milliseconds 200
+
     # 1. Parse the JSON input
     $config = Parse-JsonSafely -JsonString $JsonInput
 
@@ -369,10 +447,25 @@ try {
     if ($DisableKeepAlive) {
         $requestParams.Add('DisableKeepAlive', $true)
     }
-    
-    if ($SkipCertificateCheck) {
+
+    # ──────────────────────────────────────── *
+    # @since   2025-12-10 17:52:20
+    # @version vNAN-NAN
+    # @author  soccerhs
+    # @description
+    # 
+    #  - 파워쉘 버전별 'SkipCertificateCheck' 옵션 추가
+    # 
+    # ──────────────────────────────────────── *
+
+    # if ($SkipCertificateCheck) {
+    #     $requestParams.Add('SkipCertificateCheck', $true)
+    # }
+
+    # PowerShell Core에서만 SkipCertificateCheck 파라미터 추가
+    if ($SkipCertificateCheck -and $PSVersionTable.PSVersion.Major -ge 6) {
         $requestParams.Add('SkipCertificateCheck', $true)
-    }
+    }    
     
     if ($PSBoundParameters.ContainsKey('ProxyAddress')) {
        $requestParams.Add('Proxy', $ProxyAddress)

@@ -663,9 +663,25 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
             HEAD_DATA    : HEAD_DATA,
 
             // 로그 폴더 경로
-            LOG_FLD_PATH : sLogFolderPath
+            LOG_FLD_PATH : sLogFolderPath,
+
+            // https 인증서 오류 회피
+            SKIP_CERT    : false
 
         };
+
+        /**
+         * @since   2025-12-10 17:57:03
+         * @version vNAN-NAN
+         * @author  soccerhs
+         * @description
+         * 
+         * https 인증서 오류 회피 옵션 추가
+         * 
+         */
+        if(oServerSettings && oServerSettings.skipCertificate === true){
+            oPARAM.SKIP_CERT = true;
+        }
 
         // Help Document 파일 다운로드
         let oResult = await _getHelpDocFileDown(oPARAM);

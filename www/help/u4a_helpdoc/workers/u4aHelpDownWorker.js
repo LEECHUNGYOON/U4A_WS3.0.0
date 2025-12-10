@@ -182,8 +182,7 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
 
         self.postMessage(oRES);
 
-        // PowerShell 프로세스 생성
-        const ps = spawn("powershell.exe", [
+        var aParams = [
             "-ExecutionPolicy", "Bypass",
             "-File", oPARAM.PS_DOC_PATH,
             "-BaseUrl", oPARAM.BASE_URL,
@@ -193,7 +192,23 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
             "-dPath", oPARAM.TMP_ROOT_PATH,
             "-JsonInput", JSON.stringify(FILE_INFO),
             "-logPath", oPARAM.LOG_FLD_PATH
-        ]);
+        ];
+
+        /**
+         * @since   2025-12-10 18:01:22
+         * @version vNAN-NAN
+         * @author  soccerhs
+         * @description
+         * 
+         * 파워쉘로 패치 업데이트용 쉘 실행 시 https 인증서 오류 회피 파라미터 추가
+         * 
+         */
+        if(oPARAM.SKIP_CERT === true){
+            aParams.push("-SkipCertificateCheck");
+        }        
+
+        // PowerShell 프로세스 생성
+        const ps = spawn("powershell.exe", aParams);
 
         // 실행 결과 출력
         ps.stdout.on("data", (data) => {
