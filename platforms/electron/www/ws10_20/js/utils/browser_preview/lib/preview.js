@@ -1,8 +1,7 @@
 
 const EventEmitter = require('events');
 const puppeteer = require("puppeteer-core");
-
-
+const crypto = require("crypto");
 
 const BrowserPreviewStatusCode = {
     NO_URL_FOUND: 'NO_URL_FOUND',
@@ -13,12 +12,13 @@ const BrowserPreviewStatusCode = {
     REQUEST_ERROR: 'REQUEST_ERROR'
 };
 
-
-
 class CLBrowserPreview extends EventEmitter {
 
     constructor(option = {}){
         super();
+
+        // 🔥 인스턴스 생성 시 자동 랜덤 아이디 생성
+        this.sId = crypto.randomUUID();  
 
         // 기본 옵션
         const defaultOptions = {
@@ -51,6 +51,10 @@ class CLBrowserPreview extends EventEmitter {
         this.browser = null;
         this.page = null;
 
+    }
+
+    getId(){
+        return this.sId;
     }
 
     // 화면에 클릭한 이벤트 데이터
