@@ -466,11 +466,11 @@ function Invoke-WebClientDownload {
         # Content-Type 설정
         $webClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
         
-        # POST 요청으로 파일 다운로드
-        $responseBytes = $webClient.UploadString($Url, "POST", $postData)
+        $postBytes = [System.Text.Encoding]::UTF8.GetBytes($postData)  # ← POST 데이터를 바이트로
+
+        $responseBytes = $webClient.UploadData($Url, "POST", $postBytes)  # ← 바이트 배열 반환
         
-        # 파일로 저장
-        [System.IO.File]::WriteAllText($OutFile, $responseBytes, [System.Text.Encoding]::UTF8)
+        [System.IO.File]::WriteAllBytes($OutFile, $responseBytes)  # ← 바이너리로 저장
         
         return $true
     }
