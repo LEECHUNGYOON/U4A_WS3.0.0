@@ -1,3 +1,24 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "workbench.colorCustomizations": {
+    // 🎨 Activity Bar
+    "activityBar.background": "#2A0A3A",       // 깊은 퍼플
+    "activityBar.foreground": "#F6A4FF",       // 로고 계열의 연보라 텍스트
+    "activityBar.inactiveForeground": "#C98CE8",
+    "activityBar.activeBorder": "#FF43FF",      // 네온 핑크 / 로고 강조 계열
+    "activityBarBadge.background": "#FF43FF",
+    "activityBarBadge.foreground": "#2A0A3A",
+
+    // 💜 Title Bar (헤더)
+    "titleBar.activeBackground": "#20022F",     // 어둡고 고급스러운 퍼플
+    "titleBar.activeForeground": "#F6A4FF",
+    "titleBar.inactiveBackground": "#20022F",
+    "titleBar.inactiveForeground": "#C98CE8",
+
+    // ⚡ Status Bar
+    "statusBar.background": "#20022F",
+    "statusBar.foreground": "#F6A4FF",
+    "statusBar.noFolderBackground": "#20022F",
+    "statusBar.debuggingBackground": "#2A0A3A"
+  }
 }

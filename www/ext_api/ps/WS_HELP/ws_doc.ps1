@@ -1,4 +1,4 @@
-﻿## SAP U4A Workspace Help Document Download Script
+﻿## SAP U4A Workspace Help Document Download Script (WebClient Version)
 # HowTo : ws_doc.ps1 -BaseUrl '[Server Host Url]:[Service Port]' -sapClient '[클라이언트]' -sapUser '[User]' -sapPassword '[비번]' -dPath '[문서 저장경로]' -JsonInput '{"LANGU":"3","RINDX":3,"VERSN":"1.03","SPCNT":37,"RFNAM":"U4A_Document.chm","LOCFN":"U4A_WS30_DOCU_V1.03.chm","FSIZE":36188716,"BSPSZ":0,"DUMMY":"","ISACT":"X","CRDAT":"20250210","CRTIM":"225247","CRNAM":"U4AIDE","RETCD":"","MSGNR":"","LANG_O":"KO","BLOBCNT":37}' -Timeout [**기본값 300] -UserAgent '[**옵션]' -UseBasicParsing '[**옵션]' -MaximumRedirection [**기본값 5] -DisableKeepAlive [** 기본값 false] -SkipCertificateCheck [** 기본값 false] -ProxyAddress '[**옵션]' -ProxyCredential '[**옵션]'
 
 param (
@@ -27,15 +27,24 @@ param (
     [Parameter(Mandatory=$false)]
     [string]$UserAgent,
     
+    # Note: UseBasicParsing is Invoke-WebRequest specific parameter.
+    # WebClient (used in this script) always uses basic parsing by default.
+    # This parameter is kept for compatibility but has no effect.
     [Parameter(Mandatory=$false)]
     [switch]$UseBasicParsing,
     
+    # Note: MaximumRedirection is Invoke-WebRequest specific parameter.
+    # WebClient handles redirects automatically.
+    # This parameter is kept for compatibility but has no effect.
     [Parameter(Mandatory=$false)]
     [int]$MaximumRedirection = 5,
     
 #    [Parameter(Mandatory=$false)]
 #    [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession,
     
+    # Note: DisableKeepAlive is Invoke-WebRequest specific parameter.
+    # WebClient connection behavior is different.
+    # This parameter is kept for compatibility but has no effect.
     [Parameter(Mandatory=$false)]
     [switch]$DisableKeepAlive,
     
@@ -112,6 +121,101 @@ function Write-Log {
 
 #endregion 📝 2025-11-05 by yoon - 로그 관련
 
+# ──────────────────────────────────────── *
+# @since   2025-12-11
+# @version vNAN-NAN
+# @author  soccerhs
+# @description
+# 
+# - Timeout을 지원하는 커스텀 WebClient 클래스 정의
+# - 모든 PowerShell 버전 호환
+#
+# ──────────────────────────────────────── *
+Add-Type -TypeDefinition @"
+using System;
+using System.Net;
+
+public class WebClientWithTimeout : WebClient
+{
+    public int TimeoutMilliseconds { get; set; }
+
+    public WebClientWithTimeout()
+    {
+        TimeoutMilliseconds = 300000; // 기본값 5분
+    }
+
+    protected override WebRequest GetWebRequest(Uri address)
+    {
+        WebRequest request = base.GetWebRequest(address);
+        if (request != null)
+        {
+            request.Timeout = TimeoutMilliseconds;
+        }
+        return request;
+    }
+}
+"@
+
+# ──────────────────────────────────────── *
+# @since   2025-12-11
+# @version vNAN-NAN
+# @author  soccerhs
+# @description
+# 
+# - HTTPS 인증서 검증 회피를 위한 전역 설정
+# - SkipCertificateCheck 파라미터가 true일 경우에만 적용
+# - 모든 PowerShell 버전 호환
+#
+# ──────────────────────────────────────── *
+function Initialize-CertificatePolicy {
+    param(
+        [bool]$SkipValidation
+    )
+    
+    if ($SkipValidation) {
+        Write-Host "⚠ SSL Certificate Validation: DISABLED" -ForegroundColor Yellow
+        Write-Log -Type "I" -Message "SSL Certificate Validation Disabled (SkipCertificateCheck)"
+        
+        # 인증서 검증 완전히 무시
+        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { 
+            param($sender, $certificate, $chain, $sslPolicyErrors)
+            return $true 
+        }
+        
+        # 모든 TLS 버전 활성화
+        $protocols = @()
+        $protocols += [Net.SecurityProtocolType]::Tls
+        $protocols += [Net.SecurityProtocolType]::Tls11
+        $protocols += [Net.SecurityProtocolType]::Tls12
+        
+        # TLS 1.3 지원 확인
+        try {
+            $tls13 = [Net.SecurityProtocolType]::Tls13
+            $protocols += $tls13
+        }
+        catch {
+            Write-Host "  TLS 1.3 not supported on this system" -ForegroundColor Gray
+        }
+        
+        [Net.ServicePointManager]::SecurityProtocol = $protocols -join ', '
+        
+        # 추가 설정
+        [System.Net.ServicePointManager]::Expect100Continue = $false
+        [System.Net.ServicePointManager]::CheckCertificateRevocationList = $false
+        [System.Net.ServicePointManager]::MaxServicePointIdleTime = 30000
+        [System.Net.ServicePointManager]::DefaultConnectionLimit = 50
+        
+        Write-Host "  SecurityProtocol: $([Net.ServicePointManager]::SecurityProtocol)" -ForegroundColor Green
+        Write-Host "  Expect100Continue: $([System.Net.ServicePointManager]::Expect100Continue)" -ForegroundColor Green
+        Write-Host "  CheckCertificateRevocationList: $([System.Net.ServicePointManager]::CheckCertificateRevocationList)" -ForegroundColor Green
+        
+        Write-Log -Type "I" -Message "SecurityProtocol: $([Net.ServicePointManager]::SecurityProtocol)"
+    }
+    else {
+        Write-Host "✓ SSL Certificate Validation: ENABLED" -ForegroundColor Green
+        Write-Log -Type "I" -Message "SSL Certificate Validation Enabled"
+    }
+}
 
 # Function to parse JSON safely
 function Parse-JsonSafely {
@@ -172,81 +276,89 @@ function Check-retError {
     }
 }
 
-# Function to test URL connectivity
+# ──────────────────────────────────────── *
+# @since   2025-12-11
+# @version vNAN-NAN
+# @author  soccerhs
+# @description
+# 
+# - WebClient를 사용한 URL 연결 테스트
+# - 전역 ServicePointManager 설정을 자동으로 따름
+# - 모든 PowerShell 버전 호환
+#
+# ──────────────────────────────────────── *
 function Test-UrlConnectivity {
     param(
         [string]$Url,
         [int]$Timeout = 30,
-        [hashtable]$AdditionalParams = @{}
+        [string]$ProxyAddress,
+        [pscredential]$ProxyCredential
     )
     
     try {
         Write-Host "Testing connectivity to $Url..."
-        Write-Log -Type "I" -Message "Testing connectivity to $Url..."
+        Write-Log -Type "I" -Message "Testing connectivity to $Url..."        
+
+        $webClient = New-Object WebClientWithTimeout
         
-        # Create parameter hashtable for Invoke-WebRequest
-        $testParams = @{
-            Uri = $Url
-            Method = 'HEAD'  # Use HEAD method to reduce data transfer
-            TimeoutSec = $Timeout
-            DisableKeepAlive = $true
-            ErrorAction = 'Stop'
-        }
-        
-        # Add any additional parameters
-        foreach ($key in $AdditionalParams.Keys) {
-            if (-not $testParams.ContainsKey($key)) {
-                $testParams.Add($key, $AdditionalParams[$key])
+        try {
+            # Timeout 설정 (밀리초)
+            $webClient.TimeoutMilliseconds = $Timeout * 1000
+            
+            # Encoding 설정
+            $webClient.Encoding = [System.Text.Encoding]::UTF8
+            
+            # Proxy 설정
+            if ($ProxyAddress) {
+                $proxy = New-Object System.Net.WebProxy($ProxyAddress)
+                if ($ProxyCredential) {
+                    $proxy.Credentials = $ProxyCredential.GetNetworkCredential()
+                }
+                $webClient.Proxy = $proxy
             }
-        }
-        
-        # Suppress progress bar
-        $ProgressPreference = 'SilentlyContinue'
-        $response = Invoke-WebRequest @testParams
-        $ProgressPreference = 'Continue'
-        
-        # Check status code
-        if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 400) {
-            Write-Host "Connection successful: Status code $($response.StatusCode)"
-            Write-Log -Type "I" -Message "Connection successful: Status code $($response.StatusCode)" 
+            
+            # 간단한 다운로드 시도
+            $null = $webClient.DownloadString($Url)
+            
+            Write-Host "Connection successful"
+            Write-Log -Type "I" -Message "Connection successful"   
             return $true
-        } else {
-            Write-Host "Connection failed: Status code $($response.StatusCode)"
-            Write-Log -Type "I" -Message "Connection failed: Status code $($response.StatusCode)"
+        }
+        catch [System.Net.WebException] {
+            $statusCode = [int]$_.Exception.Response.StatusCode
+            Write-Host "Connection failed with status code: $statusCode"
+            Write-Log -Type "I" -Message "Connection failed with status code: $statusCode"
+
+            if ($_.Exception.Message -match "The remote name could not be resolved") {
+                Write-Error "DNS resolution failed for $Url. Please check the URL and your network connectivity."
+                Write-Log -Type "E" -Message "DNS resolution failed for $Url. Please check the URL and your network connectivity."
+                Write-Log -Type "E" -Message  ($_ | Out-String)
+            }
+            elseif ($_.Exception.Message -match "The operation has timed out") {
+                Write-Error "Connection to $Url timed out after $Timeout seconds."
+                Write-Log -Type "E" -Message "Connection to $Url timed out after $Timeout seconds."
+                Write-Log -Type "E" -Message  ($_ | Out-String)
+            }
+            elseif ($statusCode -eq 401 -or $statusCode -eq 403) {
+                Write-Error "Authentication or authorization error connecting to $Url."
+                Write-Log -Type "E" -Message "Authentication or authorization error connecting to $Url."
+                Write-Log -Type "E" -Message  ($_ | Out-String)
+            }
+            elseif ($statusCode -eq 404) {
+                Write-Error "The requested resource at $Url was not found (404)."
+                Write-Log -Type "E" -Message "The requested resource at $Url was not found (404)."
+                Write-Log -Type "E" -Message  ($_ | Out-String)
+            }
+            else {
+                Write-Error "Connection to $Url failed: $($_.Exception.Message)"
+                Write-Log -Type "E" -Message "Connection to $Url failed: $($_.Exception.Message)"
+                Write-Log -Type "E" -Message  ($_ | Out-String)
+            }
             return $false
         }
-    }
-    catch [System.Net.WebException] {
-        $statusCode = [int]$_.Exception.Response.StatusCode
-        Write-Host "Connection failed with status code: $statusCode"
-        Write-Log -Type "I" -Message "Connection failed with status code: $statusCode"
-        
-        if ($_.Exception.Message -match "The remote name could not be resolved") {
-            Write-Error "DNS resolution failed for $Url. Please check the URL and your network connectivity."
-            Write-Log -Type "E" -Message "DNS resolution failed for $Url. Please check the URL and your network connectivity."
-            Write-Log -Type "E" -Message  ($_ | Out-String)
+        finally {
+            $webClient.Dispose()
         }
-        elseif ($_.Exception.Message -match "The operation has timed out") {
-            Write-Error "Connection to $Url timed out after $Timeout seconds."
-            Write-Log -Type "E" -Message "Connection to $Url timed out after $Timeout seconds."
-            Write-Log -Type "E" -Message  ($_ | Out-String)
-        }
-        elseif ($statusCode -eq 401 -or $statusCode -eq 403) {
-            Write-Error "Authentication or authorization error connecting to $Url."
-            Write-Log -Type "E" -Message "Authentication or authorization error connecting to $Url."
-            Write-Log -Type "E" -Message  ($_ | Out-String)
-        }
-        elseif ($statusCode -eq 404) {
-            Write-Error "The requested resource at $Url was not found (404)."
-            Write-Log -Type "E" -Message "The requested resource at $Url was not found (404)."
-            Write-Log -Type "E" -Message  ($_ | Out-String)
-        }
-        else {
-            Write-Error "Connection to $Url failed: $($_.Exception.Message)"
-            Write-Log -Type "E" -Message "Connection to $Url failed: $($_.Exception.Message)"
-            Write-Log -Type "E" -Message  ($_ | Out-String)
-        }
-        return $false
     }
     catch {
         Write-Error "Error testing connection to ${Url}: $($_.Exception.Message)"
@@ -295,22 +407,96 @@ function Wait-ForFile {
     return 0
 }
 
+# ──────────────────────────────────────── *
+# @since   2025-12-11
+# @version vNAN-NAN
+# @author  soccerhs
+# @description
+# 
+# - WebClient를 사용한 파일 다운로드
+# - POST 요청 지원
+# - Timeout, UserAgent, Proxy 설정 지원
+# - 전역 ServicePointManager 설정을 자동으로 따름
+#
+# ──────────────────────────────────────── *
+function Invoke-WebClientDownload {
+    param(
+        [string]$Url,
+        [hashtable]$Body,
+        [string]$OutFile,
+        [int]$TimeoutSeconds = 300,
+        [string]$UserAgent,
+        [string]$ProxyAddress,
+        [pscredential]$ProxyCredential
+    )
+    
+    $webClient = New-Object WebClientWithTimeout
+    
+    try {
+        # Timeout 설정 (밀리초)
+        $webClient.TimeoutMilliseconds = $TimeoutSeconds * 1000
+        
+        # Encoding 설정
+        $webClient.Encoding = [System.Text.Encoding]::UTF8
+        
+        # UserAgent 설정
+        if ($UserAgent) {
+            $webClient.Headers.Add("User-Agent", $UserAgent)
+        }
+        
+        # Proxy 설정
+        if ($ProxyAddress) {
+            $proxy = New-Object System.Net.WebProxy($ProxyAddress)
+            if ($ProxyCredential) {
+                $proxy.Credentials = $ProxyCredential.GetNetworkCredential()
+            }
+            $webClient.Proxy = $proxy
+        }
+        
+        # Body를 query string 형태로 변환
+        $postData = ""
+        foreach ($key in $Body.Keys) {
+            if ($postData.Length -gt 0) {
+                $postData += "&"
+            }
+            $postData += [System.Web.HttpUtility]::UrlEncode($key) + "=" + [System.Web.HttpUtility]::UrlEncode($Body[$key])
+        }
+        
+        # Content-Type 설정
+        $webClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+        
+        # POST 요청으로 파일 다운로드
+        $responseBytes = $webClient.UploadString($Url, "POST", $postData)
+        
+        # 파일로 저장
+        [System.IO.File]::WriteAllText($OutFile, $responseBytes, [System.Text.Encoding]::UTF8)
+        
+        return $true
+    }
+    catch {
+        throw $_
+    }
+    finally {
+        $webClient.Dispose()
+    }
+}
+
 # Main execution block
 try {
 
     # ──────────────────────────────────────── *
-    # @since   2025-12-10 17:48:16
+    # @since   2025-12-11
     # @version vNAN-NAN
     # @author  soccerhs
     # @description
     # 
-    #  - https 인증서 오류 관련 회피 예외 로직
-    #  - SkipCertificateCheck 파라미터 처리
+    #  - SkipCertificateCheck 옵션에 따른 인증서 검증 설정
+    #  - 모든 PowerShell 버전 호환
     #
     # ──────────────────────────────────────── *
     Write-Host ""
     Write-Host "========================================" -ForegroundColor Cyan
-    Write-Host "  SAP U4A Patch Download Script" -ForegroundColor Cyan
+    Write-Host "  SAP U4A Help Document Download Script" -ForegroundColor Cyan
     Write-Host "========================================" -ForegroundColor Cyan
     Write-Host ""
     
@@ -318,62 +504,8 @@ try {
     Write-Log -Type "I" -Message "BaseUrl: $BaseUrl"
     Write-Log -Type "I" -Message "PowerShell Version: $($PSVersionTable.PSVersion)"
 
-    if ($SkipCertificateCheck) {
-        Write-Host "⚠ SSL Certificate Validation: DISABLED" -ForegroundColor Yellow
-        Write-Log -Type "I" -Message "SSL Certificate Validation Disabled (SkipCertificateCheck)"
-        
-        # Windows PowerShell 5.1 이하
-        if ($PSVersionTable.PSVersion.Major -lt 6) {
-            Write-Host "Applying SSL/TLS settings for Windows PowerShell..." -ForegroundColor Yellow
-            
-            # 인증서 검증 완전히 무시
-            [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { 
-                param($sender, $certificate, $chain, $sslPolicyErrors)
-                return $true 
-            }
-            
-            # 모든 TLS 버전 활성화
-            $protocols = @()
-            $protocols += [Net.SecurityProtocolType]::Tls
-            $protocols += [Net.SecurityProtocolType]::Tls11
-            $protocols += [Net.SecurityProtocolType]::Tls12
-            
-            # TLS 1.3 지원 확인
-            try {
-                $tls13 = [Net.SecurityProtocolType]::Tls13
-                $protocols += $tls13
-            }
-            catch {
-                Write-Host "  TLS 1.3 not supported on this system" -ForegroundColor Gray
-            }
-            
-            [Net.ServicePointManager]::SecurityProtocol = $protocols -join ', '
-            
-            # 추가 설정
-            [System.Net.ServicePointManager]::Expect100Continue = $false
-            [System.Net.ServicePointManager]::CheckCertificateRevocationList = $false
-            [System.Net.ServicePointManager]::MaxServicePointIdleTime = 30000
-            [System.Net.ServicePointManager]::DefaultConnectionLimit = 50
-            
-            Write-Host "  SecurityProtocol: $([Net.ServicePointManager]::SecurityProtocol)" -ForegroundColor Green
-            Write-Host "  Expect100Continue: $([System.Net.ServicePointManager]::Expect100Continue)" -ForegroundColor Green
-            Write-Host "  CheckCertificateRevocationList: $([System.Net.ServicePointManager]::CheckCertificateRevocationList)" -ForegroundColor Green
-            
-            Write-Log -Type "I" -Message "SecurityProtocol: $([Net.ServicePointManager]::SecurityProtocol)"
-        }
-        # PowerShell Core 6.0 이상
-        else {
-            Write-Host "Using SkipCertificateCheck parameter (PowerShell Core)" -ForegroundColor Yellow
-            Write-Log -Type "I" -Message "Using SkipCertificateCheck parameter (PowerShell $($PSVersionTable.PSVersion.Major))"
-        }
-    }
-    else {
-        Write-Host "✓ SSL Certificate Validation: ENABLED" -ForegroundColor Green
-        Write-Log -Type "I" -Message "SSL Certificate Validation Enabled"
-    }
-
-    # ✅ 설정 적용을 위한 짧은 대기
-    Start-Sleep -Milliseconds 200
+    # HTTPS 인증서 검증 설정
+    Initialize-CertificatePolicy -SkipValidation $SkipCertificateCheck
 
     # 1. Parse the JSON input
     $config = Parse-JsonSafely -JsonString $JsonInput
@@ -383,29 +515,29 @@ try {
     
     # Verify required JSON field exists(Language Key)
     if ($null -eq $config.LANG_O) {
-        Write-Error "Missing required \"LANG_O\" field in JSON input"
-        Write-Log -Type "E" -Message "Missing required \"LANG_O\" field in JSON input"
+        Write-Error "Missing required `"LANG_O`" field in JSON input"
+        Write-Log -Type "E" -Message "Missing required `"LANG_O`" field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
 
     # Verify required JSON field exists(Rel. Index)
     if ($null -eq $config.RINDX) {
-        Write-Error "Missing required \"RINDX\" field in JSON input"
-        Write-Log -Type "E" -Message "Missing required \"RINDX\" field in JSON input"
+        Write-Error "Missing required `"RINDX`" field in JSON input"
+        Write-Log -Type "E" -Message "Missing required `"RINDX`" field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
 
     # Verify required JSON field exists(BLOB Request Count)
     if ($null -eq $config.BLOBCNT) {
-        Write-Error "Missing required \"BLOBCNT\" field in JSON input"
-        Write-Log -Type "E" -Message "Missing required \"BLOBCNT\" field in JSON input"
+        Write-Error "Missing required `"BLOBCNT`" field in JSON input"
+        Write-Log -Type "E" -Message "Missing required `"BLOBCNT`" field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
 
     # Verify required JSON field exists(Local File Name)
     if ($null -eq $config.LOCFN) {
-        Write-Error "Missing required \"LOCFN\" field in JSON input"
-        Write-Log -Type "E" -Message "Missing required \"LOCFN\" field in JSON input"
+        Write-Error "Missing required `"LOCFN`" field in JSON input"
+        Write-Log -Type "E" -Message "Missing required `"LOCFN`" field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
 
@@ -419,70 +551,29 @@ try {
         'LANGU_OUT' = $config.LANG_O
     }
     
-    # Build request parameters - will be used for both testing and actual requests
-    $requestParams = @{
-        Uri = $baseUrl
-        Method = 'Post'
-        TimeoutSec = $Timeout
-        OutFile = ""
+    # Build request configuration for WebClient
+    $requestConfig = @{
+        Url = $baseUrl
+        TimeoutSeconds = $Timeout
     }
     
     # Add optional parameters if provided
     if ($PSBoundParameters.ContainsKey('UserAgent')) {
-        $requestParams.Add('UserAgent', $UserAgent)
+        $requestConfig.UserAgent = $UserAgent
     }
-    
-    if ($UseBasicParsing) {
-        $requestParams.Add('UseBasicParsing', $true)
-    }
-    
-    if ($PSBoundParameters.ContainsKey('MaximumRedirection')) {
-        $requestParams.Add('MaximumRedirection', $MaximumRedirection)
-    }
-    
-#   if ($PSBoundParameters.ContainsKey('WebSession')) {
-#       $requestParams.Add('WebSession', $WebSession)
-#   }
-    
-    if ($DisableKeepAlive) {
-        $requestParams.Add('DisableKeepAlive', $true)
-    }
-
-    # ──────────────────────────────────────── *
-    # @since   2025-12-10 17:52:20
-    # @version vNAN-NAN
-    # @author  soccerhs
-    # @description
-    # 
-    #  - 파워쉘 버전별 'SkipCertificateCheck' 옵션 추가
-    # 
-    # ──────────────────────────────────────── *
-
-    # if ($SkipCertificateCheck) {
-    #     $requestParams.Add('SkipCertificateCheck', $true)
-    # }
-
-    # PowerShell Core에서만 SkipCertificateCheck 파라미터 추가
-    if ($SkipCertificateCheck -and $PSVersionTable.PSVersion.Major -ge 6) {
-        $requestParams.Add('SkipCertificateCheck', $true)
-    }    
     
     if ($PSBoundParameters.ContainsKey('ProxyAddress')) {
-       $requestParams.Add('Proxy', $ProxyAddress)
+        $requestConfig.ProxyAddress = $ProxyAddress
     }
    
     if ($PSBoundParameters.ContainsKey('ProxyCredential')) {
-       $requestParams.Add('ProxyCredential', $ProxyCredential)
+        $requestConfig.ProxyCredential = $ProxyCredential
     }
     
     # Test connectivity to the base URL
     $baseServer = $BaseUrl -replace '(/[^/]+)?$', '' # Extract server part without endpoint
-    $testParams = $requestParams.Clone()
-    $testParams.Remove('OutFile')
-    $testParams.Method = 'HEAD'
-    $testParams.Uri = $baseServer
     
-    $isConnected = Test-UrlConnectivity -Url $baseServer -Timeout 10 -AdditionalParams $testParams
+    $isConnected = Test-UrlConnectivity -Url $baseServer -Timeout 10 -ProxyAddress $ProxyAddress -ProxyCredential $ProxyCredential
     
     if (-not $isConnected) {
         Write-Error "Cannot connect to server at $baseServer. Please check your network connection and server status."
@@ -505,10 +596,8 @@ try {
     # Clean up any existing .dxx files
     Remove-Item -Path "*.dxx" -ErrorAction SilentlyContinue
     
-    # 3. Download files using Invoke-WebRequest with progress bar    
+    # 3. Download files using WebClient with progress bar    
     $relNumber = Format-NumberWithLeadingZeros -Number $config.RINDX -Length 10
-
-    # Using previously created requestParams for all requests
     
     for ($i = 1; $i -le $config.BLOBCNT; $i++) {
         $posNumber = Format-NumberWithLeadingZeros -Number $i -Length 4
@@ -518,33 +607,39 @@ try {
         
         $body = $credentials.Clone()
         $body['RELKY'] = "$relNumber" + "$posNumber"
-        
-        # Update the OutFile for this iteration
-        $requestParams.OutFile = $outputFile
-        $requestParams.Body = $body
 
         # ──────────────────────────────────────── *
-        # @since   2025-11-10 11:39:34
-        # @version v3.5.6-16
-        # @author  soccerhs
-        # @description
-        # 
-        #  - Invoke-WebRequest 통신 오류 예외로직 추가
-        # 
+        # WebClient를 사용한 다운로드
         # ──────────────────────────────────────── *
         try {
-            # Use Invoke-WebRequest in silent mode
-            $ProgressPreference = 'SilentlyContinue'
-            $response = Invoke-WebRequest @requestParams
-            $ProgressPreference = 'Continue'
+            $downloadParams = @{
+                Url = $requestConfig.Url
+                Body = $body
+                OutFile = $outputFile
+                TimeoutSeconds = $requestConfig.TimeoutSeconds
+            }
+            
+            if ($requestConfig.UserAgent) {
+                $downloadParams.UserAgent = $requestConfig.UserAgent
+            }
+            
+            if ($requestConfig.ProxyAddress) {
+                $downloadParams.ProxyAddress = $requestConfig.ProxyAddress
+            }
+            
+            if ($requestConfig.ProxyCredential) {
+                $downloadParams.ProxyCredential = $requestConfig.ProxyCredential
+            }
+            
+            $null = Invoke-WebClientDownload @downloadParams
         }
         catch {
             $errMsg = $_ | Out-String            
             $errType = $_.Exception.GetType().FullName
 
             # 콘솔(표준 오류)에 기록
-            Write-Error "Invoke-WebRequest failed: [$errType] $errMsg"
-            Write-Log -Type "E" -Message "Invoke-WebRequest failed: [$errType] $errMsg"
+            Write-Error "WebClient download failed: [$errType] $errMsg"
+            Write-Log -Type "E" -Message "WebClient download failed: [$errType] $errMsg"
 
             # 종료 코드로 명시적 전달
             exit $ERROR_INVOKE_WEB_REQ
@@ -594,7 +689,7 @@ try {
     # Clear the progress bar
     Write-Progress -Activity "Downloading Patch Files" -Completed
     
-    # 4. Combine all .wsx files into final executable
+    # 4. Combine all .dxx files into final document
     Write-Host "Combining files into $($lfnam) ..."
     Write-Log -Type "I" -Message "Combining files into $($lfnam) ..."
 
@@ -627,8 +722,8 @@ try {
         exit $SUCCESS
     }
     else {
-        Write-Error "Failed to create final executable"
-        Write-Log -Type "E" -Message "Failed to create final executable"
+        Write-Error "Failed to create final document"
+        Write-Log -Type "E" -Message "Failed to create final document"
         exit $ERROR_FILE_COMBINE
     }
 }
