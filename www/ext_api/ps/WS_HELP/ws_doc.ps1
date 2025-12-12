@@ -540,6 +540,11 @@ try {
         Write-Log -Type "E" -Message "Missing required `"LOCFN`" field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
+    
+    # Change to the work directory (ePath)
+    Set-Location -Path $dPath
+    Write-Host "Working directory set to: $dPath"
+    Write-Log -Type "I" -Message "Working directory set to: $dPath"
 
     # 2. Process downloads based on BLOBCNT count
     $baseUrl = $BaseUrl + "/zu4a_wbc/u4a_ipcmain/u4a_help_doc_ws30"
@@ -601,7 +606,8 @@ try {
     
     for ($i = 1; $i -le $config.BLOBCNT; $i++) {
         $posNumber = Format-NumberWithLeadingZeros -Number $i -Length 4
-        $outputFile = "$relNumber" + "$posNumber.dxx"
+        $outputFile = Join-Path $dPath "$relNumber$posNumber.dxx"
+        # $outputFile = "$relNumber" + "$posNumber.dxx"
         
         Show-DownloadProgress -Current $i -Total $config.BLOBCNT
         

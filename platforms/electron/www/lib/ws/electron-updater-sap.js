@@ -341,16 +341,14 @@ function _getUpdateFileWorker(oPARAM) {
         });
 
         return;
-    } 
+    }
 
-    //#region ws3.0 에 추가해야할 항목
     // 로그 저장 폴더 경로
     let sLogFolderPath = PATH.join(USERDATA, "logs", "u4a_ws_major");
     
     if(APP.isPackaged){
         sLogFolderPath = PATH.join(USERDATA, "logs");
     }
-    //#endregion
 
     let oServerSettings = oLoginInfo?.SERVER_SETTINGS || undefined;
 

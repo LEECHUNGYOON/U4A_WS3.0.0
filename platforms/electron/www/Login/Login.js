@@ -2041,13 +2041,13 @@ let oAPP = (function () {
 
             // 서버에서 받은 로그인 정보
             let oLoginInfo = oPARAM.oResult; 
-            if(!REMOTE.app.isPackaged){
+            // if(!REMOTE.app.isPackaged){
                 
-                //#region TEST --------- Start
-                sVersion = '3.5.5';
-                //#endregion TEST ------ End
+            //     //#region TEST --------- Start
+            //     sVersion = '3.5.5';
+            //     //#endregion TEST ------ End
 
-            }
+            // }
 
             // 로그인 정보에 서버에서 구한 메타 정보 추가
             oServerInfo.LOGIN.META = oLoginInfo.META;            
@@ -3314,12 +3314,12 @@ let oAPP = (function () {
         // 로그인 정보에 서버에서 구한 메타 정보 추가
         oWSLoginInfo.META = oParam.oLoginInfo.META;        
 
-        if(!REMOTE.app.isPackaged){            
-            //#region TEST  patch update --------- Start
-            sAppVer = 'v3.5.6';
-            sPatch_level = 0;
-            //#endregion TEST patch update ------ End
-        }
+        // if(!REMOTE.app.isPackaged){            
+        //     //#region TEST  patch update --------- Start
+        //     sAppVer = 'v3.5.6';
+        //     sPatch_level = 0;
+        //     //#endregion TEST patch update ------ End
+        // }
 
         spAutoUpdater.checkForUpdates(REMOTE, bIsCDN, sAppVer, sPatch_level, oWSLoginInfo);
 
