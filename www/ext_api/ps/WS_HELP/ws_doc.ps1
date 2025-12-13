@@ -1,6 +1,5 @@
 ﻿## SAP U4A Workspace Help Document Download Script (WebClient Version)
 # HowTo : ws_doc.ps1 -BaseUrl '[Server Host Url]:[Service Port]' -sapClient '[클라이언트]' -sapUser '[User]' -sapPassword '[비번]' -dPath '[문서 저장경로]' -JsonInput '{"LANGU":"3","RINDX":3,"VERSN":"1.03","SPCNT":37,"RFNAM":"U4A_Document.chm","LOCFN":"U4A_WS30_DOCU_V1.03.chm","FSIZE":36188716,"BSPSZ":0,"DUMMY":"","ISACT":"X","CRDAT":"20250210","CRTIM":"225247","CRNAM":"U4AIDE","RETCD":"","MSGNR":"","LANG_O":"KO","BLOBCNT":37}' -Timeout [**기본값 300] -UserAgent '[**옵션]' -UseBasicParsing '[**옵션]' -MaximumRedirection [**기본값 5] -DisableKeepAlive [** 기본값 false] -SkipCertificateCheck [** 기본값 false] -ProxyAddress '[**옵션]' -ProxyCredential '[**옵션]'
-
 param (
     [Parameter(Mandatory=$true)]
     [string]$BaseUrl,
@@ -22,7 +21,7 @@ param (
     
     # Optional Request Parameters
     [Parameter(Mandatory=$false)]
-    [int]$Timeout = 300,
+    [int]$Timeout = 30,
     
     [Parameter(Mandatory=$false)]
     [string]$UserAgent,
@@ -70,10 +69,8 @@ param (
     [string]$logPath
 )
 
-#region 2025-11-03 by yoon ---- output Encoding
 # UTF-8 환경 강제 설정
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-#endregion
 
 # Exit codes
 $SUCCESS = 0
@@ -86,8 +83,6 @@ $ERROR_CONNECTION = 6
 $ERROR_GENERAL = 8
 $ERROR_INVOKE_WEB_REQ = 10
 $ERROR_NO_FILE_EXIST = 11
-
-#region 📝 2025-11-05 by yoon - 로그 관련
 
 # 로그 관련 공통함수
 Import-Module "$PSScriptRoot/../COMMON/log.psm1"
@@ -118,8 +113,6 @@ function Write-Log {
         Write-DailyLog -Message $Message -Prefix $logPrefix -LogDir $logPath -Type $Type
     }    
 }
-
-#endregion 📝 2025-11-05 by yoon - 로그 관련
 
 # ──────────────────────────────────────── *
 # @since   2025-12-11
@@ -277,81 +270,179 @@ function Check-retError {
 }
 
 # ──────────────────────────────────────── *
-# @since   2025-12-11
+# @since   2025-12-12
 # @version vNAN-NAN
 # @author  soccerhs
 # @description
 # 
 # - WebClient를 사용한 URL 연결 테스트
+# - POST 요청 + Body 지원 (SAP 인증 포함)
+# - XMLHttpRequest.timeout처럼 정확한 timeout 동작
 # - 전역 ServicePointManager 설정을 자동으로 따름
 # - 모든 PowerShell 버전 호환
 #
 # ──────────────────────────────────────── *
+#region Test-UrlConnectivity
+#endregion 
 function Test-UrlConnectivity {
     param(
         [string]$Url,
+        [hashtable]$Body,  # ← Body 파라미터 추가
         [int]$Timeout = 30,
         [string]$ProxyAddress,
         [pscredential]$ProxyCredential
     )
     
     try {
-        Write-Host "Testing connectivity to $Url..."
-        Write-Log -Type "I" -Message "Testing connectivity to $Url..."        
+        Write-Host ""
+        Write-Host "========================================" -ForegroundColor Yellow
+        Write-Host "  Test-UrlConnectivity 시작" -ForegroundColor Yellow
+        Write-Host "========================================" -ForegroundColor Yellow
+        Write-Host "  URL     : $Url" -ForegroundColor Cyan
+        Write-Host "  Timeout : $Timeout seconds" -ForegroundColor Cyan
+        Write-Host "  Method  : POST (with credentials)" -ForegroundColor Cyan
+        Write-Host "========================================" -ForegroundColor Yellow
+        Write-Host ""
+        
+        Write-Log -Type "I" -Message "Testing connectivity to $Url (Timeout: ${Timeout}s, Method: POST with credentials)"
 
         $webClient = New-Object WebClientWithTimeout
         
         try {
-            # Timeout 설정 (밀리초)
+            # Timeout 설정 (밀리초) - 전체 요청/응답 시간
             $webClient.TimeoutMilliseconds = $Timeout * 1000
             
             # Encoding 설정
             $webClient.Encoding = [System.Text.Encoding]::UTF8
             
-            # Proxy 설정
+            # Proxy 설정 - 명시적 처리
             if ($ProxyAddress) {
+                Write-Host "  Proxy 사용: $ProxyAddress" -ForegroundColor Gray
+                Write-Log -Type "I" -Message "Using Proxy: $ProxyAddress"
+                
                 $proxy = New-Object System.Net.WebProxy($ProxyAddress)
                 if ($ProxyCredential) {
                     $proxy.Credentials = $ProxyCredential.GetNetworkCredential()
                 }
                 $webClient.Proxy = $proxy
             }
+            else {
+                # 시스템 기본 Proxy 사용 안 함 (timeout 정확도 보장)
+                Write-Host "  Proxy 사용 안 함 (직접 연결)" -ForegroundColor Gray
+                Write-Log -Type "I" -Message "Direct connection (No proxy)"
+                $webClient.Proxy = $null
+            }
             
-            # 간단한 다운로드 시도
-            $null = $webClient.DownloadString($Url)
+            # Body를 query string 형태로 변환 (Invoke-WebClientDownload와 동일)
+            $postData = ""
+            if ($Body) {
+                foreach ($key in $Body.Keys) {
+                    if ($postData.Length -gt 0) {
+                        $postData += "&"
+                    }
+                    # 비밀번호는 로그에 표시하지 않음
+                    if ($key -ne "sap-password") {
+                        Write-Host "  Body[$key]: $($Body[$key])" -ForegroundColor Gray
+                    }
+                    else {
+                        Write-Host "  Body[$key]: ********" -ForegroundColor Gray
+                    }
+                    $postData += [System.Web.HttpUtility]::UrlEncode($key) + "=" + [System.Web.HttpUtility]::UrlEncode($Body[$key])
+                }
+            }
             
-            Write-Host "Connection successful"
-            Write-Log -Type "I" -Message "Connection successful"   
+            # 호출 직전
+            Write-Host ""
+            Write-Host "→ HTTP POST 요청 시작..." -ForegroundColor Cyan
+            Write-Host "  (SAP 엔드포인트 인증 포함 테스트)" -ForegroundColor Gray
+            
+            $startTime = Get-Date
+            
+            # Content-Type 설정
+            $webClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+            
+            # POST 요청 (Invoke-WebClientDownload와 동일한 방식)
+            $postBytes = [System.Text.Encoding]::UTF8.GetBytes($postData)
+            $responseBytes = $webClient.UploadData($Url, "POST", $postBytes)
+            $result = [System.Text.Encoding]::UTF8.GetString($responseBytes)
+            
+            # 호출 직후
+            $endTime = Get-Date
+            $elapsed = [math]::Round(($endTime - $startTime).TotalSeconds, 2)
+            
+            Write-Host "✓ HTTP POST 요청 완료!" -ForegroundColor Green
+            Write-Host "  소요 시간: $elapsed 초" -ForegroundColor Green
+            Write-Host "  응답 크기: $($result.Length) bytes" -ForegroundColor Green
+            
+            # 응답이 너무 길면 일부만 표시
+            if ($result.Length -gt 200) {
+                $preview = $result.Substring(0, 200) + "..."
+                Write-Host "  응답 미리보기: $preview" -ForegroundColor Gray
+            }
+            else {
+                Write-Host "  응답 내용: $result" -ForegroundColor Gray
+            }
+            Write-Host ""
+            
+            Write-Log -Type "I" -Message "Connection successful (Elapsed: ${elapsed}s, Response: $($result.Length) bytes)"
             return $true
         }
         catch [System.Net.WebException] {
-            $statusCode = [int]$_.Exception.Response.StatusCode
-            Write-Host "Connection failed with status code: $statusCode"
-            Write-Log -Type "I" -Message "Connection failed with status code: $statusCode"
+            $endTime = Get-Date
+            $elapsed = [math]::Round(($endTime - $startTime).TotalSeconds, 2)
+            
+            Write-Host ""
+            Write-Host "✗ 연결 실패!" -ForegroundColor Red
+            Write-Host "  소요 시간: $elapsed 초" -ForegroundColor Yellow
+            Write-Host "  Exception Type: $($_.Exception.GetType().FullName)" -ForegroundColor Red
+            Write-Host "  Exception Message: $($_.Exception.Message)" -ForegroundColor Red
+            
+            # 타임아웃 여부 명확히 표시
+            if ($_.Exception.Message -match "The operation has timed out") {
+                Write-Host ""
+                Write-Host "⏱ TIMEOUT 발생!" -ForegroundColor Magenta
+                Write-Host "  설정 시간: $Timeout 초" -ForegroundColor Magenta
+                Write-Host "  실제 소요: $elapsed 초" -ForegroundColor Magenta
+                Write-Host ""
+            }
+            
+            $statusCode = 0
+            if ($_.Exception.Response) {
+                $statusCode = [int]$_.Exception.Response.StatusCode
+                Write-Host "  HTTP Status Code: $statusCode" -ForegroundColor Red
+            }
+            Write-Host ""
+            
+            Write-Log -Type "E" -Message "Connection failed (Elapsed: ${elapsed}s, Status: $statusCode)"
 
             if ($_.Exception.Message -match "The remote name could not be resolved") {
                 Write-Error "DNS resolution failed for $Url. Please check the URL and your network connectivity."
-                Write-Log -Type "E" -Message "DNS resolution failed for $Url. Please check the URL and your network connectivity."
+                Write-Log -Type "E" -Message "DNS resolution failed for $Url"
                 Write-Log -Type "E" -Message  ($_ | Out-String)
             }
             elseif ($_.Exception.Message -match "The operation has timed out") {
                 Write-Error "Connection to $Url timed out after $Timeout seconds."
-                Write-Log -Type "E" -Message "Connection to $Url timed out after $Timeout seconds."
+                Write-Log -Type "E" -Message "Connection timeout after $Timeout seconds"
                 Write-Log -Type "E" -Message  ($_ | Out-String)
             }
             elseif ($statusCode -eq 401 -or $statusCode -eq 403) {
                 Write-Error "Authentication or authorization error connecting to $Url."
-                Write-Log -Type "E" -Message "Authentication or authorization error connecting to $Url."
+                Write-Log -Type "E" -Message "Authentication or authorization error"
                 Write-Log -Type "E" -Message  ($_ | Out-String)
             }
             elseif ($statusCode -eq 404) {
                 Write-Error "The requested resource at $Url was not found (404)."
-                Write-Log -Type "E" -Message "The requested resource at $Url was not found (404)."
+                Write-Log -Type "E" -Message "Resource not found (404)"
+                Write-Log -Type "E" -Message  ($_ | Out-String)
+            }
+            elseif ($statusCode -eq 405) {
+                Write-Host "⚠ Method Not Allowed (405) - 서버가 POST 요청을 지원하지 않습니다." -ForegroundColor Yellow
+                Write-Log -Type "W" -Message "Method Not Allowed (405)"
                 Write-Log -Type "E" -Message  ($_ | Out-String)
             }
             else {
                 Write-Error "Connection to $Url failed: $($_.Exception.Message)"
-                Write-Log -Type "E" -Message "Connection to $Url failed: $($_.Exception.Message)"
+                Write-Log -Type "E" -Message "Connection failed: $($_.Exception.Message)"
                 Write-Log -Type "E" -Message  ($_ | Out-String)
             }
             return $false
@@ -361,8 +452,13 @@ function Test-UrlConnectivity {
         }
     }
     catch {
+        Write-Host ""
+        Write-Host "✗ 예상치 못한 에러!" -ForegroundColor Red
+        Write-Host "  $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host ""
+        
         Write-Error "Error testing connection to ${Url}: $($_.Exception.Message)"
-        Write-Log -Type "E" -Message "Error testing connection to ${Url}: $($_.Exception.Message)"
+        Write-Log -Type "E" -Message "Unexpected error: $($_.Exception.Message)"
         Write-Log -Type "E" -Message  ($_ | Out-String)
         return $false
     }
@@ -496,7 +592,7 @@ try {
     # ──────────────────────────────────────── *
     Write-Host ""
     Write-Host "========================================" -ForegroundColor Cyan
-    Write-Host "  SAP U4A Help Document Download Script" -ForegroundColor Cyan
+    Write-Host "  U4A Help Document Download Script" -ForegroundColor Cyan
     Write-Host "========================================" -ForegroundColor Cyan
     Write-Host ""
     
@@ -540,12 +636,14 @@ try {
         Write-Log -Type "E" -Message "Missing required `"LOCFN`" field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
-    
+
     # Change to the work directory (ePath)
     Set-Location -Path $dPath
     Write-Host "Working directory set to: $dPath"
     Write-Log -Type "I" -Message "Working directory set to: $dPath"
 
+    #region Base Url
+    #endregion    
     # 2. Process downloads based on BLOBCNT count
     $baseUrl = $BaseUrl + "/zu4a_wbc/u4a_ipcmain/u4a_help_doc_ws30"
     $credentials = @{
@@ -576,10 +674,27 @@ try {
     }
     
     # Test connectivity to the base URL
-    $baseServer = $BaseUrl -replace '(/[^/]+)?$', '' # Extract server part without endpoint
-    
-    $isConnected = Test-UrlConnectivity -Url $baseServer -Timeout 10 -ProxyAddress $ProxyAddress -ProxyCredential $ProxyCredential
-    
+    # $baseServer = $BaseUrl -replace '(/[^/]+)?$', '' # Extract server part without endpoint
+    $baseServer = $baseUrl  # 실제 SAP 엔드포인트 사용
+    $testBody = $credentials.Clone()  # ← credentials 복사해서 사용!
+
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Magenta
+    Write-Host "  연결 테스트 준비" -ForegroundColor Magenta
+    Write-Host "========================================" -ForegroundColor Magenta
+    Write-Host "  BaseUrl : $BaseUrl" -ForegroundColor White
+    Write-Host "  ⚠ 실제 SAP 엔드포인트로 인증 포함 테스트합니다" -ForegroundColor Yellow
+    Write-Host "========================================" -ForegroundColor Magenta
+    Write-Host ""
+
+    $isConnected = Test-UrlConnectivity -Url $baseServer -Body $testBody -Timeout $Timeout -ProxyAddress $ProxyAddress -ProxyCredential $ProxyCredential
+
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Magenta
+    Write-Host "  연결 테스트 결과: $isConnected" -ForegroundColor $(if ($isConnected) { "Green" } else { "Red" })
+    Write-Host "========================================" -ForegroundColor Magenta
+    Write-Host ""
+
     if (-not $isConnected) {
         Write-Error "Cannot connect to server at $baseServer. Please check your network connection and server status."
         Write-Log -Type "E" -Message "Cannot connect to server at $baseServer. Please check your network connection and server status."
@@ -637,6 +752,8 @@ try {
                 $downloadParams.ProxyCredential = $requestConfig.ProxyCredential
             }
             
+            #region Invoke-WebClientDownload
+            #endregion 
             $null = Invoke-WebClientDownload @downloadParams
         }
         catch {
