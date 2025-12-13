@@ -33,7 +33,7 @@
   "build": {
     "nsis": {
       "deleteAppDataOnUninstall": true,
-      "include": "www/ext_api/nsh/uninstaller.nsh"
+      "include": "www/ext_api/nsh/u4a-nsis-hooks.nsh"
     },
     "asar": true,
     "copyright": "Copyright 2020. INFOCG Inc. all rights reserved.",
