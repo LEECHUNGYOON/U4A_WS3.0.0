@@ -48,11 +48,7 @@ const
     REMOTE = parent.REMOTE,
     APP = REMOTE.app,
     FS = parent.FS,
-
-    //#region ws3.0 추가해야할 항목
     USERDATA = APP.getPath("userData"),
-    //#endregion
-
     APPPATH = APP.getAppPath();
 
 let __updateFilename = "",
@@ -208,7 +204,6 @@ function _getUpdateFileWorker(oPARAM) {
 
                 return;
 
-            //#region ws3.0 에 추가해야할 항목
             case "update-error-console": // 콘솔 오류 대상
 
                 // 로그 정보가 있을 경우에는 콘솔 오류에 로그 정보를 담는다
@@ -221,7 +216,6 @@ function _getUpdateFileWorker(oPARAM) {
                 console.error(sLog);
 
                 return;
-            //#endregion      
 
             case "update-error-sap": //오류
 

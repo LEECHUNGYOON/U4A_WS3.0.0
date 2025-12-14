@@ -1,5 +1,4 @@
 const FS = require("fs");
-const { endianness } = require("os");
 const spawn = require("child_process").spawn;
 
 // 공통 응답 구조

@@ -6,6 +6,7 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 function Write-DailyLog {
     param (
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
         [string]$Message,
 
         [Parameter(Mandatory = $true)]

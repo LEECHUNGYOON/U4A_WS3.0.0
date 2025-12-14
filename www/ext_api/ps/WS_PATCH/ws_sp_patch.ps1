@@ -101,18 +101,31 @@ $logPrefix = "U4A_WS_PATCH";
 # @description
 # 
 # 파일레벨로 로그 남기는 공통 함수
+# Write-Host (stdout) + 파일 로그 통합
 # 
 # ──────────────────────────────────────── *
 function Write-Log {
     param (
 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
         [string]$Message,
 
-        [string]$Type = 'I'
+        [string]$Type = 'I',
+
+        [string]$Color
   
     )
 
+    # Write-Host 출력 (stdout)
+    if ($Color) {
+        Write-Host $Message -ForegroundColor $Color
+    }
+    else {
+        Write-Host $Message
+    }
+
+    # 파일 로그 출력
     if ($logPath) {
         Write-DailyLog -Message $Message -Prefix $logPrefix -LogDir $logPath -Type $Type
     }    
@@ -170,8 +183,7 @@ function Initialize-CertificatePolicy {
     )
     
     if ($SkipValidation) {
-        Write-Host "⚠ SSL Certificate Validation: DISABLED" -ForegroundColor Yellow
-        Write-Log -Type "I" -Message "SSL Certificate Validation Disabled (SkipCertificateCheck)"
+        Write-Log -Type "I" -Message "⚠ SSL Certificate Validation: DISABLED" -Color Yellow
         
         # 인증서 검증 완전히 무시
         [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { 
@@ -191,7 +203,7 @@ function Initialize-CertificatePolicy {
             $protocols += $tls13
         }
         catch {
-            Write-Host "  TLS 1.3 not supported on this system" -ForegroundColor Gray
+            Write-Log -Type "I" -Message "  TLS 1.3 not supported on this system" -Color Gray
         }
         
         [Net.ServicePointManager]::SecurityProtocol = $protocols -join ', '
@@ -202,15 +214,12 @@ function Initialize-CertificatePolicy {
         [System.Net.ServicePointManager]::MaxServicePointIdleTime = 30000
         [System.Net.ServicePointManager]::DefaultConnectionLimit = 50
         
-        Write-Host "  SecurityProtocol: $([Net.ServicePointManager]::SecurityProtocol)" -ForegroundColor Green
-        Write-Host "  Expect100Continue: $([System.Net.ServicePointManager]::Expect100Continue)" -ForegroundColor Green
-        Write-Host "  CheckCertificateRevocationList: $([System.Net.ServicePointManager]::CheckCertificateRevocationList)" -ForegroundColor Green
-        
-        Write-Log -Type "I" -Message "SecurityProtocol: $([Net.ServicePointManager]::SecurityProtocol)"
+        Write-Log -Type "I" -Message "  SecurityProtocol: $([Net.ServicePointManager]::SecurityProtocol)" -Color Green
+        Write-Log -Type "I" -Message "  Expect100Continue: $([System.Net.ServicePointManager]::Expect100Continue)" -Color Green
+        Write-Log -Type "I" -Message "  CheckCertificateRevocationList: $([System.Net.ServicePointManager]::CheckCertificateRevocationList)" -Color Green
     }
     else {
-        Write-Host "✓ SSL Certificate Validation: ENABLED" -ForegroundColor Green
-        Write-Log -Type "I" -Message "SSL Certificate Validation Enabled"
+        Write-Log -Type "I" -Message "✓ SSL Certificate Validation: ENABLED" -Color Green
     }
 }
 
@@ -305,16 +314,15 @@ function Test-UrlConnectivity {
     )
     
     try {
-        Write-Host ""
-        Write-Host "========================================" -ForegroundColor Yellow
-        Write-Host "  Test-UrlConnectivity 시작" -ForegroundColor Yellow
-        Write-Host "========================================" -ForegroundColor Yellow
-        Write-Host "  URL     : $Url" -ForegroundColor Cyan
-        Write-Host "  Timeout : $Timeout seconds" -ForegroundColor Cyan
-        Write-Host "  Method  : POST (with credentials)" -ForegroundColor Cyan
-        Write-Host "========================================" -ForegroundColor Yellow
-        Write-Host ""
-        
+        Write-Log -Type "I" -Message ""
+        Write-Log -Type "I" -Message "========================================" -Color Yellow
+        Write-Log -Type "I" -Message "  Test-UrlConnectivity 시작" -Color Yellow
+        Write-Log -Type "I" -Message "========================================" -Color Yellow
+        Write-Log -Type "I" -Message "  URL     : $Url" -Color Cyan
+        Write-Log -Type "I" -Message "  Timeout : $Timeout seconds" -Color Cyan
+        Write-Log -Type "I" -Message "  Method  : POST (with credentials)" -Color Cyan
+        Write-Log -Type "I" -Message "========================================" -Color Yellow
+        Write-Log -Type "I" -Message ""
         Write-Log -Type "I" -Message "Testing connectivity to $Url (Timeout: ${Timeout}s, Method: POST with credentials)"
 
         $webClient = New-Object WebClientWithTimeout
@@ -328,8 +336,7 @@ function Test-UrlConnectivity {
             
             # Proxy 설정 - 명시적 처리
             if ($ProxyAddress) {
-                Write-Host "  Proxy 사용: $ProxyAddress" -ForegroundColor Gray
-                Write-Log -Type "I" -Message "Using Proxy: $ProxyAddress"
+                Write-Log -Type "I" -Message "  Proxy 사용: $ProxyAddress" -Color Gray
                 
                 $proxy = New-Object System.Net.WebProxy($ProxyAddress)
                 if ($ProxyCredential) {
@@ -339,8 +346,7 @@ function Test-UrlConnectivity {
             }
             else {
                 # 시스템 기본 Proxy 사용 안 함 (timeout 정확도 보장)
-                Write-Host "  Proxy 사용 안 함 (직접 연결)" -ForegroundColor Gray
-                Write-Log -Type "I" -Message "Direct connection (No proxy)"
+                Write-Log -Type "I" -Message "  Proxy 사용 안 함 (직접 연결)" -Color Gray
                 $webClient.Proxy = $null
             }
             
@@ -353,19 +359,19 @@ function Test-UrlConnectivity {
                     }
                     # 비밀번호는 로그에 표시하지 않음
                     if ($key -ne "sap-password") {
-                        Write-Host "  Body[$key]: $($Body[$key])" -ForegroundColor Gray
+                        Write-Log -Type "I" -Message "  Body[$key]: $($Body[$key])" -Color Gray
                     }
                     else {
-                        Write-Host "  Body[$key]: ********" -ForegroundColor Gray
+                        Write-Log -Type "I" -Message "  Body[$key]: ********" -Color Gray
                     }
                     $postData += [System.Web.HttpUtility]::UrlEncode($key) + "=" + [System.Web.HttpUtility]::UrlEncode($Body[$key])
                 }
             }
             
             # 호출 직전
-            Write-Host ""
-            Write-Host "→ HTTP POST 요청 시작..." -ForegroundColor Cyan
-            Write-Host "  (SAP 엔드포인트 인증 포함 테스트)" -ForegroundColor Gray
+            Write-Log -Type "I" -Message ""
+            Write-Log -Type "I" -Message "→ HTTP POST 요청 시작..." -Color Cyan
+            Write-Log -Type "I" -Message "  (SAP 엔드포인트 인증 포함 테스트)" -Color Gray
             
             $startTime = Get-Date
             
@@ -381,80 +387,90 @@ function Test-UrlConnectivity {
             $endTime = Get-Date
             $elapsed = [math]::Round(($endTime - $startTime).TotalSeconds, 2)
             
-            Write-Host "✓ HTTP POST 요청 완료!" -ForegroundColor Green
-            Write-Host "  소요 시간: $elapsed 초" -ForegroundColor Green
-            Write-Host "  응답 크기: $($result.Length) bytes" -ForegroundColor Green
+            Write-Log -Type "I" -Message "✓ HTTP POST 요청 완료!" -Color Green
+            Write-Log -Type "I" -Message "  소요 시간: $elapsed 초" -Color Green
+            Write-Log -Type "I" -Message "  응답 크기: $($result.Length) bytes" -Color Green
             
             # 응답이 너무 길면 일부만 표시
             if ($result.Length -gt 200) {
                 $preview = $result.Substring(0, 200) + "..."
-                Write-Host "  응답 미리보기: $preview" -ForegroundColor Gray
+                Write-Log -Type "I" -Message "  응답 미리보기: $preview" -Color Gray
             }
             else {
-                Write-Host "  응답 내용: $result" -ForegroundColor Gray
+                Write-Log -Type "I" -Message "  응답 내용: $result" -Color Gray
             }
-            Write-Host ""
+            Write-Log -Type "I" -Message ""
             
-            Write-Log -Type "I" -Message "Connection successful (Elapsed: ${elapsed}s, Response: $($result.Length) bytes)"
             return $true
         }
         catch [System.Net.WebException] {
             $endTime = Get-Date
             $elapsed = [math]::Round(($endTime - $startTime).TotalSeconds, 2)
             
-            Write-Host ""
-            Write-Host "✗ 연결 실패!" -ForegroundColor Red
-            Write-Host "  소요 시간: $elapsed 초" -ForegroundColor Yellow
-            Write-Host "  Exception Type: $($_.Exception.GetType().FullName)" -ForegroundColor Red
-            Write-Host "  Exception Message: $($_.Exception.Message)" -ForegroundColor Red
+            Write-Log -Type "E" -Message ""
+            Write-Log -Type "E" -Message "✗ 연결 실패!" -Color Red
+            Write-Log -Type "E" -Message "  소요 시간: $elapsed 초" -Color Yellow
+            Write-Log -Type "E" -Message "  Exception Type: $($_.Exception.GetType().FullName)" -Color Red
+            Write-Log -Type "E" -Message "  Exception Message: $($_.Exception.Message)" -Color Red
             
             # 타임아웃 여부 명확히 표시
-            if ($_.Exception.Message -match "The operation has timed out") {
-                Write-Host ""
-                Write-Host "⏱ TIMEOUT 발생!" -ForegroundColor Magenta
-                Write-Host "  설정 시간: $Timeout 초" -ForegroundColor Magenta
-                Write-Host "  실제 소요: $elapsed 초" -ForegroundColor Magenta
-                Write-Host ""
+            if ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::Timeout) {
+                Write-Log -Type "E" -Message ""
+                Write-Log -Type "E" -Message "⏱ TIMEOUT 발생!" -Color Magenta
+                Write-Log -Type "E" -Message "  설정 시간: $Timeout 초" -Color Magenta
+                Write-Log -Type "E" -Message "  실제 소요: $elapsed 초" -Color Magenta
+                Write-Log -Type "E" -Message ""
             }
             
             $statusCode = 0
             if ($_.Exception.Response) {
                 $statusCode = [int]$_.Exception.Response.StatusCode
-                Write-Host "  HTTP Status Code: $statusCode" -ForegroundColor Red
+                Write-Log -Type "E" -Message "  HTTP Status Code: $statusCode" -Color Red
             }
-            Write-Host ""
-            
-            Write-Log -Type "E" -Message "Connection failed (Elapsed: ${elapsed}s, Status: $statusCode)"
+            Write-Log -Type "E" -Message ""
 
-            if ($_.Exception.Message -match "The remote name could not be resolved") {
+            if ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::NameResolutionFailure) {
                 Write-Error "DNS resolution failed for $Url. Please check the URL and your network connectivity."
                 Write-Log -Type "E" -Message "DNS resolution failed for $Url"
-                Write-Log -Type "E" -Message  ($_ | Out-String)
+                Write-Log -Type "E" -Message ($_ | Out-String)
             }
-            elseif ($_.Exception.Message -match "The operation has timed out") {
+            elseif ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::Timeout) {
                 Write-Error "Connection to $Url timed out after $Timeout seconds."
                 Write-Log -Type "E" -Message "Connection timeout after $Timeout seconds"
-                Write-Log -Type "E" -Message  ($_ | Out-String)
+                Write-Log -Type "E" -Message ($_ | Out-String)
             }
-            elseif ($statusCode -eq 401 -or $statusCode -eq 403) {
-                Write-Error "Authentication or authorization error connecting to $Url."
-                Write-Log -Type "E" -Message "Authentication or authorization error"
-                Write-Log -Type "E" -Message  ($_ | Out-String)
+            elseif ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::ProtocolError) {
+                if ($statusCode -eq 401 -or $statusCode -eq 403) {
+                    Write-Error "Authentication or authorization error connecting to $Url."
+                    Write-Log -Type "E" -Message "Authentication or authorization error"
+                }
+                elseif ($statusCode -eq 404) {
+                    Write-Error "The requested resource at $Url was not found (404)."
+                    Write-Log -Type "E" -Message "Resource not found (404)"
+                }
+                elseif ($statusCode -eq 405) {
+                    Write-Log -Type "W" -Message "⚠ Method Not Allowed (405) - 서버가 POST 요청을 지원하지 않습니다." -Color Yellow
+                }
+                else {
+                    Write-Error "HTTP Error: $statusCode"
+                    Write-Log -Type "E" -Message "HTTP Error: $statusCode"
+                }
+                Write-Log -Type "E" -Message ($_ | Out-String)
             }
-            elseif ($statusCode -eq 404) {
-                Write-Error "The requested resource at $Url was not found (404)."
-                Write-Log -Type "E" -Message "Resource not found (404)"
-                Write-Log -Type "E" -Message  ($_ | Out-String)
+            elseif ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::ConnectFailure) {
+                Write-Error "Connection failed to $Url"
+                Write-Log -Type "E" -Message "Connection failed to $Url"
+                Write-Log -Type "E" -Message ($_ | Out-String)
             }
-            elseif ($statusCode -eq 405) {
-                Write-Host "⚠ Method Not Allowed (405) - 서버가 POST 요청을 지원하지 않습니다." -ForegroundColor Yellow
-                Write-Log -Type "W" -Message "Method Not Allowed (405)"
-                Write-Log -Type "E" -Message  ($_ | Out-String)
+            elseif ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::TrustFailure) {
+                Write-Error "SSL/TLS certificate error"
+                Write-Log -Type "E" -Message "SSL/TLS certificate error"
+                Write-Log -Type "E" -Message ($_ | Out-String)
             }
             else {
                 Write-Error "Connection to $Url failed: $($_.Exception.Message)"
-                Write-Log -Type "E" -Message "Connection failed: $($_.Exception.Message)"
-                Write-Log -Type "E" -Message  ($_ | Out-String)
+                Write-Log -Type "E" -Message "Connection failed: Status=$($_.Exception.Status)"
+                Write-Log -Type "E" -Message ($_ | Out-String)
             }
             return $false
         }
@@ -463,14 +479,13 @@ function Test-UrlConnectivity {
         }
     }
     catch {
-        Write-Host ""
-        Write-Host "✗ 예상치 못한 에러!" -ForegroundColor Red
-        Write-Host "  $($_.Exception.Message)" -ForegroundColor Red
-        Write-Host ""
+        Write-Log -Type "E" -Message ""
+        Write-Log -Type "E" -Message "✗ 예상치 못한 에러!" -Color Red
+        Write-Log -Type "E" -Message "  $($_.Exception.Message)" -Color Red
+        Write-Log -Type "E" -Message ""
         
         Write-Error "Error testing connection to ${Url}: $($_.Exception.Message)"
-        Write-Log -Type "E" -Message "Unexpected error: $($_.Exception.Message)"
-        Write-Log -Type "E" -Message  ($_ | Out-String)
+        Write-Log -Type "E" -Message ($_ | Out-String)
         return $false
     }
 }
@@ -492,7 +507,6 @@ function Wait-ForFile {
         [int]$IntervalSeconds = 1
     )
     
-    Write-Host "Check exists File. $FilePath"
     Write-Log -Type "I" -Message "Check exists File. $FilePath"
     
     # 파일 존재 여부 체크 카운트
@@ -504,7 +518,6 @@ function Wait-ForFile {
             return 1
         }
 
-        Write-Host "No exists File ($iCheckCnt) --- $FilePath"
         Write-Log -Type "I" -Message "No exists File ($iCheckCnt) --- $FilePath"
 
         $iCheckCnt++
@@ -526,6 +539,8 @@ function Wait-ForFile {
 # - 전역 ServicePointManager 설정을 자동으로 따름
 #
 # ──────────────────────────────────────── *
+#region Invoke-WebClientDownload
+#endregion
 function Invoke-WebClientDownload {
     param(
         [string]$Url,
@@ -538,6 +553,7 @@ function Invoke-WebClientDownload {
     )
     
     $webClient = New-Object WebClientWithTimeout
+    $startTime = Get-Date
     
     try {
         # Timeout 설정 (밀리초)
@@ -568,19 +584,89 @@ function Invoke-WebClientDownload {
             }
             $postData += [System.Web.HttpUtility]::UrlEncode($key) + "=" + [System.Web.HttpUtility]::UrlEncode($Body[$key])
         }
-
+        
         # Content-Type 설정
         $webClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
-
-        $postBytes = [System.Text.Encoding]::UTF8.GetBytes($postData)  # ← POST 데이터를 바이트로
-
-        $responseBytes = $webClient.UploadData($Url, "POST", $postBytes)  # ← 바이트 배열 반환
         
-        [System.IO.File]::WriteAllBytes($OutFile, $responseBytes)  # ← 바이너리로 저장
+        $postBytes = [System.Text.Encoding]::UTF8.GetBytes($postData)
+
+        $responseBytes = $webClient.UploadData($Url, "POST", $postBytes)
+        
+        [System.IO.File]::WriteAllBytes($OutFile, $responseBytes)
         
         return $true
     }
+    catch [System.Net.WebException] {
+        $endTime = Get-Date
+        $elapsed = [math]::Round(($endTime - $startTime).TotalSeconds, 2)
+        
+        Write-Log -Type "E" -Message ""
+        Write-Log -Type "E" -Message "✗ 다운로드 실패!" -Color Red
+        Write-Log -Type "E" -Message "  소요 시간: $elapsed 초" -Color Yellow
+        Write-Log -Type "E" -Message "  Exception Type: $($_.Exception.GetType().FullName)" -Color Red
+        Write-Log -Type "E" -Message "  Exception Message: $($_.Exception.Message)" -Color Red
+        
+        # 타임아웃 여부 명확히 표시
+        if ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::Timeout) {
+            Write-Log -Type "E" -Message ""
+            Write-Log -Type "E" -Message "⏱ TIMEOUT 발생!" -Color Magenta
+            Write-Log -Type "E" -Message "  설정 시간: $TimeoutSeconds 초" -Color Magenta
+            Write-Log -Type "E" -Message "  실제 소요: $elapsed 초" -Color Magenta
+            Write-Log -Type "E" -Message ""
+        }
+        
+        $statusCode = 0
+        if ($_.Exception.Response) {
+            $statusCode = [int]$_.Exception.Response.StatusCode
+            Write-Log -Type "E" -Message "  HTTP Status Code: $statusCode" -Color Red
+        }
+        Write-Log -Type "E" -Message ""
+
+        if ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::NameResolutionFailure) {
+            Write-Log -Type "E" -Message "DNS resolution failed for $Url"
+            Write-Log -Type "E" -Message ($_ | Out-String)
+        }
+        elseif ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::Timeout) {
+            Write-Log -Type "E" -Message "Download timeout after $TimeoutSeconds seconds"
+            Write-Log -Type "E" -Message ($_ | Out-String)
+        }
+        elseif ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::ProtocolError) {
+            if ($statusCode -eq 401 -or $statusCode -eq 403) {
+                Write-Log -Type "E" -Message "Authentication or authorization error"
+            }
+            elseif ($statusCode -eq 404) {
+                Write-Log -Type "E" -Message "Resource not found (404)"
+            }
+            elseif ($statusCode -eq 405) {
+                Write-Log -Type "W" -Message "⚠ Method Not Allowed (405)" -Color Yellow
+            }
+            else {
+                Write-Log -Type "E" -Message "HTTP Error: $statusCode"
+            }
+            Write-Log -Type "E" -Message ($_ | Out-String)
+        }
+        elseif ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::ConnectFailure) {
+            Write-Log -Type "E" -Message "Connection failed to $Url"
+            Write-Log -Type "E" -Message ($_ | Out-String)
+        }
+        elseif ($_.Exception.Status -eq [System.Net.WebExceptionStatus]::TrustFailure) {
+            Write-Log -Type "E" -Message "SSL/TLS certificate error"
+            Write-Log -Type "E" -Message ($_ | Out-String)
+        }
+        else {
+            Write-Log -Type "E" -Message "Download failed: Status=$($_.Exception.Status)"
+            Write-Log -Type "E" -Message ($_ | Out-String)
+        }
+        
+        throw $_
+    }
     catch {
+        Write-Log -Type "E" -Message ""
+        Write-Log -Type "E" -Message "✗ 예상치 못한 에러!" -Color Red
+        Write-Log -Type "E" -Message "  $($_.Exception.Message)" -Color Red
+        Write-Log -Type "E" -Message ""
+        Write-Log -Type "E" -Message ($_ | Out-String)
+        
         throw $_
     }
     finally {
@@ -612,10 +698,6 @@ function Process-Downloads {
     $workDirectory = Split-Path -Path $OutputPath -Parent
     $outputFileName = Split-Path -Path $OutputPath -Leaf
     
-    Write-Host "Starting download of $TotalCount $Type files..."
-    Write-Host "Work Directory: $workDirectory"
-    Write-Host "Output File: $outputFileName"
-
     Write-Log -Type "I" -Message "Starting download of $TotalCount $Type files..."
     Write-Log -Type "I" -Message "Work Directory: $workDirectory"
     Write-Log -Type "I" -Message "Output File: $outputFileName"
@@ -623,7 +705,6 @@ function Process-Downloads {
     # 작업 디렉토리가 존재하는지 확인하고 없으면 생성
     if (-not (Test-Path -Path $workDirectory)) {
         New-Item -Path $workDirectory -ItemType Directory -Force | Out-Null
-        Write-Host "Created work directory: $workDirectory"
         Write-Log -Type "I" -Message "Created work directory: $workDirectory"
     }
     
@@ -666,8 +747,7 @@ function Process-Downloads {
             if ($RequestConfig.ProxyCredential) {
                 $downloadParams.ProxyCredential = $RequestConfig.ProxyCredential
             }
-            #region Invoke-WebClientDownload
-            #endregion
+
             $null = Invoke-WebClientDownload @downloadParams
         }
         catch {
@@ -696,7 +776,6 @@ function Process-Downloads {
             # ──────────────────────────────────────── *    
             $isfileExixts = Wait-ForFile -FilePath $tempOutputFile -TimeoutSeconds 30
             if ($isfileExixts -eq 1) {
-                Write-Host "Success: File exists. $Type file: $tempOutputFile"
                 Write-Log -Type "I" -Message "Success: File exists. $Type file: $tempOutputFile"
             } else {         
                 Write-Error "Error: File not found. $Type file: $tempOutputFile"
@@ -708,8 +787,7 @@ function Process-Downloads {
             # Check for bad file data
             $fileContent = Get-Content $tempOutputFile -Raw -ErrorAction SilentlyContinue
             if ($fileContent -eq "X") {
-                Write-Host "Warning: File contains only 'X' character, which indicates an error"
-                Write-Log -Type "I" -Message "Warning: File contains only 'X' character, which indicates an error"
+                Write-Log -Type "W" -Message "Warning: File contains only 'X' character, which indicates an error" -Color Yellow
             }          
 
             # Check for response error in the downloaded file
@@ -721,13 +799,12 @@ function Process-Downloads {
                 exit $ERROR_RESPONSE
             }
             
-            Write-Host "CHUNK_DOWN_OK:$i"
             Write-Log -Type "I" -Message "CHUNK_DOWN_OK:$i"
         }
         catch {
             Write-Error "Failed to download file $tempOutputFile : $($_.Exception.Message)"
             Write-Log -Type "E" -Message "Failed to download file $tempOutputFile : $($_.Exception.Message)"
-            Write-Log -Type "E" -Message  ($_ | Out-String)
+            Write-Log -Type "E" -Message ($_ | Out-String)
             Pop-Location
             exit $ERROR_DOWNLOAD
         }
@@ -736,7 +813,6 @@ function Process-Downloads {
     Write-Progress -Activity "Downloading $Type Files" -Completed
     
     # Combine files
-    Write-Host "Combining $Type files into $OutputPath..."
     Write-Log -Type "I" -Message "Combining $Type files into $OutputPath..."
 
     $copyCommand = "copy /b $filePattern `"$outputFileName`" >nul 2>&1"
@@ -751,12 +827,10 @@ function Process-Downloads {
     
     # Verify and cleanup
     if (Test-Path $outputFileName) {
-        Write-Host "Successfully created $outputFileName in $workDirectory"
         Write-Log -Type "I" -Message "Successfully created $outputFileName in $workDirectory"
         
         Remove-Item -Path $filePattern -Force
 
-        Write-Host "Cleaned up temporary $Type .wsx files"
         Write-Log -Type "I" -Message "Cleaned up temporary $Type .wsx files"
     }
     else {
@@ -773,7 +847,15 @@ function Process-Downloads {
 # ──────────────────────────────────────── *
 # Main execution block
 # ──────────────────────────────────────── *
+#region Main execution block
+#endregion 
 try {
+
+    # Parse the JSON input
+    $config = Parse-JsonSafely -JsonString $JsonInput
+
+    # log Prefix 만들때 버전 + Patch 번호 조합하기
+    $logPrefix += "_" + $config.VERSN + "-" + $config.SPLEV
 
     # ──────────────────────────────────────── *
     # @since   2025-12-11
@@ -786,23 +868,15 @@ try {
     #
     # ──────────────────────────────────────── *
 
-    Write-Host ""
-    Write-Host "========================================" -ForegroundColor Cyan
-    Write-Host "  U4A Support Patch Update Download Script" -ForegroundColor Cyan
-    Write-Host "========================================" -ForegroundColor Cyan
-    Write-Host ""
-    
-    Write-Log -Type "I" -Message "========== Script Started =========="
+    Write-Log -Type "I" -Message ""
+    Write-Log -Type "I" -Message "========================================" -Color Cyan
+    Write-Log -Type "I" -Message "  U4A Support Patch Update Download Script" -Color Cyan
+    Write-Log -Type "I" -Message "========================================" -Color Cyan
+    Write-Log -Type "I" -Message ""
     Write-Log -Type "I" -Message "BaseUrl: $BaseUrl"
     Write-Log -Type "I" -Message "PowerShell Version: $($PSVersionTable.PSVersion)"
         
     Initialize-CertificatePolicy -SkipValidation $SkipCertificateCheck
-
-    # Parse the JSON input
-    $config = Parse-JsonSafely -JsonString $JsonInput
-
-    # log Prefix 만들때 버전 + Patch 번호 조합하기
-    $logPrefix += "_" + $config.VERSN + "-" + $config.SPLEV
     
     # Verify JSON fields and validate counts
     if ($null -eq $config.TOTSP -or $null -eq $config.TOTND) {
@@ -853,22 +927,26 @@ try {
     $baseServer = $baseUrl  # 실제 SAP 엔드포인트 사용
     $testBody = $credentials.Clone()  # ← credentials 복사해서 사용!
 
-    Write-Host ""
-    Write-Host "========================================" -ForegroundColor Magenta
-    Write-Host "  연결 테스트 준비" -ForegroundColor Magenta
-    Write-Host "========================================" -ForegroundColor Magenta
-    Write-Host "  BaseUrl : $BaseUrl" -ForegroundColor White
-    Write-Host "  ⚠ 실제 SAP 엔드포인트로 인증 포함 테스트합니다" -ForegroundColor Yellow
-    Write-Host "========================================" -ForegroundColor Magenta
-    Write-Host ""
+    Write-Log -Type "I" -Message ""
+    Write-Log -Type "I" -Message "========================================" -Color Magenta
+    Write-Log -Type "I" -Message "  연결 테스트 준비" -Color Magenta
+    Write-Log -Type "I" -Message "========================================" -Color Magenta
+    Write-Log -Type "I" -Message "  BaseUrl : $BaseUrl" -Color White
+    Write-Log -Type "I" -Message "  ⚠ 실제 SAP 엔드포인트로 인증 포함 테스트합니다" -Color Yellow
+    Write-Log -Type "I" -Message "========================================" -Color Magenta
+    Write-Log -Type "I" -Message ""
 
     $isConnected = Test-UrlConnectivity -Url $baseServer -Body $testBody -Timeout $Timeout -ProxyAddress $ProxyAddress -ProxyCredential $ProxyCredential
     
-    Write-Host ""
-    Write-Host "========================================" -ForegroundColor Magenta
-    Write-Host "  연결 테스트 결과: $isConnected" -ForegroundColor $(if ($isConnected) { "Green" } else { "Red" })
-    Write-Host "========================================" -ForegroundColor Magenta
-    Write-Host ""
+    Write-Log -Type "I" -Message ""
+    Write-Log -Type "I" -Message "========================================" -Color Magenta
+    if ($isConnected) {
+        Write-Log -Type "I" -Message "  연결 테스트 결과: $isConnected" -Color Green
+    } else {
+        Write-Log -Type "E" -Message "  연결 테스트 결과: $isConnected" -Color Red
+    }
+    Write-Log -Type "I" -Message "========================================" -Color Magenta
+    Write-Log -Type "I" -Message ""
 
     if (-not $isConnected) {
         Write-Error "Cannot connect to server at $baseServer. Please check your network connection and server status."
@@ -894,6 +972,6 @@ try {
 }
 catch {
     Write-Error "An error occurred: $($_.Exception.Message)"
-    Write-Log -Type "E" -Message  "An error occurred: $($_ | Out-String)"
+    Write-Log -Type "E" -Message "An error occurred: $($_ | Out-String)"
     exit $ERROR_GENERAL
 }
