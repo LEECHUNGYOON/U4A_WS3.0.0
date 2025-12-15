@@ -1236,75 +1236,7 @@
 
     }; // end of oAPP.fn.fnExternalOpen
 
-    /**
-     * @since   2025-12-08 14:12:49
-     * @version vNAN-NAN
-     * @author  soccerhs
-     * @description
-     * 
-     * 미리보기 브라우저 실행
-     * 
-     */
-    async function _openBrowserPreview(oParam){
-
-        let oBrowserOptions = {
-            url: oParam.URL,
-            launchOptions: {
-                executablePath: oParam.INSPATH,
-                args: [
-                  
-                ]
-            }
-        };
-
-        // 앱모드 일경우 파라미터 argument 추가
-        if(oParam.APP_MODE === true){
-            oBrowserOptions.launchOptions.args.push(`--app=${oParam.URL}`);  
-        }
-
-
-        let oParams = {
-            browserOptions: oBrowserOptions,
-            oAPP : oAPP
-        };
-
-       parent.require(parent.PATH.join(parent.PATHINFO.JS_ROOT, "utils", "browser_preview"))(oParams);
-
-
-        // console.log("fnOnExecApp - 개발 모드 실행!!");
-
-        // let oPreview = new CLBrowserPreview(oOptions);
-
-        // oPreview.on('action', function(action){
-
-        //     // 현재 실행 중인 페이지가 WS20번일 경우에만 동작!!!
-
-        //     console.log("브라우저 미리보기 액션", action);
-
-        //     oAPP.fn.setSelectTreeItem(action.OBJID, action.UIATK, null);
-
-        // });
-
-        // oPreview.on('close', function(){
-
-        //     console.log("브라우저 미리보기 닫힘!!");
-
-        // });
-
-        // oPreview.on('err', function(error){
-
-        //     console.log("브라우저 미리보기 실행 중 오류 발생!!");
-
-        // });
-
-
-        // let oLaunchRes = await oPreview.launchPage();
-
-        // console.log("브라우저 미리보기 종료!!");
-
-
-    } // end of _openBrowserPreview
-
+    
     /************************************************************************
      * 브라우저를 실행하는 공통 함수
      * @param {string} sUrl - 실행할 URL
