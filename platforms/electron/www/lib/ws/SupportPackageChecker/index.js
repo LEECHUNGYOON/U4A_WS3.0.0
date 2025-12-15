@@ -791,7 +791,7 @@ function _getPatchUpdateFileWorker(oPARAM){
 
     /**
      * @since   2025-12-10 17:57:03
-     * @version vNAN-NAN
+     * @version v3.5.6-17
      * @author  soccerhs
      * @description
      * 

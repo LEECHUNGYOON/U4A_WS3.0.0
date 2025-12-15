@@ -195,7 +195,7 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
 
         /**
          * @since   2025-12-10 18:01:22
-         * @version vNAN-NAN
+         * @version v3.5.6-17
          * @author  soccerhs
          * @description
          * 

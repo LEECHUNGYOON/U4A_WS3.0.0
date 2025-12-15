@@ -133,7 +133,7 @@ function Write-Log {
 
 # ──────────────────────────────────────── *
 # @since   2025-12-11
-# @version vNAN-NAN
+# @version v3.5.6-17
 # @author  soccerhs
 # @description
 # 
@@ -168,7 +168,7 @@ public class WebClientWithTimeout : WebClient
 
 # ──────────────────────────────────────── *
 # @since   2025-12-11
-# @version vNAN-NAN
+# @version v3.5.6-17
 # @author  soccerhs
 # @description
 # 
@@ -291,7 +291,7 @@ function Check-retError {
 
 # ──────────────────────────────────────── *
 # @since   2025-12-12
-# @version vNAN-NAN
+# @version v3.5.6-17
 # @author  soccerhs
 # @description
 # 
@@ -529,7 +529,7 @@ function Wait-ForFile {
 
 # ──────────────────────────────────────── *
 # @since   2025-12-11
-# @version vNAN-NAN
+# @version v3.5.6-17
 # @author  soccerhs
 # @description
 # 
@@ -676,7 +676,7 @@ function Invoke-WebClientDownload {
 
 # ──────────────────────────────────────── *
 # @since   2025-12-11
-# @version vNAN-NAN
+# @version v3.5.6-17
 # @author  soccerhs
 # @description
 # 
@@ -859,7 +859,7 @@ try {
 
     # ──────────────────────────────────────── *
     # @since   2025-12-11
-    # @version vNAN-NAN
+    # @version v3.5.6-17
     # @author  soccerhs
     # @description
     # 
