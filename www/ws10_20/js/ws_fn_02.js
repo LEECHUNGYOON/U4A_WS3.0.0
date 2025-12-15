@@ -12,8 +12,8 @@
         REMOTEMAIN = parent.REMOTEMAIN,
         APPCOMMON = oAPP.common;
 
-    // 브라우저 미리보기
-    const { CLBrowserPreview } = parent.require(parent.PATH.join(parent.PATHINFO.JS_ROOT, "utils", "browser_preview"));
+    // // 브라우저 미리보기
+    // const { CLBrowserPreview } = parent.require(parent.PATH.join(parent.PATHINFO.JS_ROOT, "utils", "browser_preview"));
 
     /************************************************************************
      * Application Display or Change mode 
@@ -1236,7 +1236,42 @@
 
     }; // end of oAPP.fn.fnExternalOpen
 
-    
+
+    /**
+     * @since   2025-12-08 14:12:49
+     * @version vNAN-NAN
+     * @author  soccerhs
+     * @description
+     * 
+     * 개발자 모드 브라우저 실행
+     * 
+     */
+    async function _openDevBrowser(oParam){
+
+        let oBrowserOptions = {
+            url: oParam.URL,
+            launchOptions: {
+                executablePath: oParam.INSPATH,
+                args: [
+                  
+                ]
+            }
+        };
+
+        // 앱모드 일경우 파라미터 argument 추가
+        if(oParam.APP_MODE === true){
+            oBrowserOptions.launchOptions.args.push(`--app=${oParam.URL}`);  
+        }
+
+        let oParams = {
+            browserOptions: oBrowserOptions,
+            oAPP : oAPP
+        };
+
+       parent.require(parent.PATH.join(parent.PATHINFO.JS_ROOT, "utils", "dev_browser"))(oParams);
+
+    } // end of _openDevBrowser
+
     /************************************************************************
      * 브라우저를 실행하는 공통 함수
      * @param {string} sUrl - 실행할 URL
@@ -1260,6 +1295,20 @@
             let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333");
             parent.showMessage(sap, 20, 'E', sMsg);
             return false;
+        }
+
+        // 개발 모드일 경우
+        if(oSelectedBrows?.DEV_MODE === true){
+
+            let oParams = {
+                ...oSelectedBrows,
+                URL: sUrl,
+            };
+
+            // 개발 모드 브라우저 실행
+            _openDevBrowser(oParams);
+
+            return;
         }
 
         // 앱모드 처리
@@ -1361,7 +1410,7 @@
     //             APP_MODE: !!oSelectedBrows.APP_MODE 
     //         };
 
-    //         _openBrowserPreview(oParams);
+    //         _openDevBrowser(oParams);
 
     //         return;
     //     }
@@ -1423,7 +1472,7 @@
     //             URL: sPath
     //         };
 
-    //         _openBrowserPreview(oParams);
+    //         _openDevBrowser(oParams);
 
     //         return;
     //     }

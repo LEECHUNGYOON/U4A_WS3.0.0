@@ -1,9 +1,9 @@
 
-const { CLBrowserPreview, BrowserPreviewStatusCode } = require("./lib/preview");
+const { CLDevBrowser, DevBrowserStatusCode } = require("./lib/devBrowser");
 
 const { CLIpcHandler } = parent.require(parent.PATH.join(parent.PATHINFO.JS_ROOT, "utils", "ipc-handler"));
 
-// module.exports = { CLBrowserPreview };
+// module.exports = { CLDevBrowser };
 
 
 const IPC_HANDLER = new CLIpcHandler();
@@ -39,10 +39,15 @@ IPC_HANDLER.on("naviTo", (event, params) => {
 
 module.exports = async function(oParams){
 
+
+    console.log("개발자 모드 브라우저 실행!!",oParams);
+
+    return;
+
     const oAPP = oParams.oAPP;
     
     
-    let oPreview = new CLBrowserPreview(oParams.browserOptions);    
+    let oPreview = new CLDevBrowser(oParams.browserOptions);    
 
     oPreview.on('action', function(action){
 

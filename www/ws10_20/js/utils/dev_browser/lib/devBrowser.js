@@ -3,7 +3,7 @@ const EventEmitter = require('events');
 const puppeteer = require("puppeteer-core");
 const crypto = require("crypto");
 
-const BrowserPreviewStatusCode = {
+const DevBrowserStatusCode = {
     NO_URL_FOUND: 'NO_URL_FOUND',
     NO_PAGE_FOUND: 'NO_PAGE_FOUND',
     ALREADY_LAUNCHED: 'ALREADY_LAUNCHED',
@@ -12,7 +12,7 @@ const BrowserPreviewStatusCode = {
     REQUEST_ERROR: 'REQUEST_ERROR'
 };
 
-class CLBrowserPreview extends EventEmitter {
+class CLDevBrowser extends EventEmitter {
 
     constructor(option = {}){
         super();
@@ -72,7 +72,7 @@ class CLBrowserPreview extends EventEmitter {
         // 페이지 에러
         this.page.on('pageerror', (err) => {
             // if (this.status !== RecorderState.RECORDING) return;
-            // this._pushError(BrowserPreviewStatusCode.BROWSER_CONSOLE_ERROR, err.message, { stack: err.stack });
+            // this._pushError(DevBrowserStatusCode.BROWSER_CONSOLE_ERROR, err.message, { stack: err.stack });
         });
 
         // 요청 실패
@@ -80,7 +80,7 @@ class CLBrowserPreview extends EventEmitter {
             // if (this.status !== RecorderState.RECORDING) return;
             // const failure = req.failure();
             // if (failure?.errorText === 'net::ERR_ABORTED') return;
-            // this._pushError(BrowserPreviewStatusCode.REQUEST_ERROR, failure?.errorText || 'Failed', { url: req.url(), method: req.method() });
+            // this._pushError(DevBrowserStatusCode.REQUEST_ERROR, failure?.errorText || 'Failed', { url: req.url(), method: req.method() });
         });
 
     }
@@ -202,7 +202,7 @@ class CLBrowserPreview extends EventEmitter {
     //         await this.page.goto(this.option.url);
 
     //     } catch (error) {
-    //         return { RETCD: 'E', STCOD: BrowserPreviewStatusCode.LAUNCH_FAILED, MSGTX: error.message };
+    //         return { RETCD: 'E', STCOD: DevBrowserStatusCode.LAUNCH_FAILED, MSGTX: error.message };
     //     }
 
     //     return { RETCD: 'S' };
@@ -253,7 +253,7 @@ class CLBrowserPreview extends EventEmitter {
             this.page.evaluateOnNewDocument(sInjectScript);
 
         } catch (error) {
-            return { RETCD: 'E', STCOD: BrowserPreviewStatusCode.LAUNCH_FAILED, MSGTX: error.message };
+            return { RETCD: 'E', STCOD: DevBrowserStatusCode.LAUNCH_FAILED, MSGTX: error.message };
         }
 
         return { RETCD: 'S' };
@@ -268,4 +268,4 @@ class CLBrowserPreview extends EventEmitter {
 
 }
 
-module.exports = { CLBrowserPreview, BrowserPreviewStatusCode };
+module.exports = { CLDevBrowser, DevBrowserStatusCode };
