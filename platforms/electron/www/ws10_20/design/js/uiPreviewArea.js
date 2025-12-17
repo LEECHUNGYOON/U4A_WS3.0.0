@@ -1470,4 +1470,59 @@
   };
 
 
+
+  /**
+   * @since   2025-12-17 12:02:55
+   * @version v3.5.7-3
+   * @author  pes
+   * @description
+   *  sap.uxap.ObjectPageDynamicHeaderTitle의 actions에 추가된 UI의 위치를 옮기면서 발생된 사항으로
+   *  일반적인 상황인 경우, UI.destory(); 처리시 부모 영역에서 현재 UI를 제거하게됨.
+   *  그러나, sap.uxap.ObjectPageDynamicHeaderTitle의 actions에 추가된 UI의 경우,
+   *  UI.destory(); 처리시 부모 영역에서 현재 UI를 제거하지 않음.
+   *  이에 따라 현재 UI를 제거하기전, 부모 영역에서 직접 remove처리 하는 내용을 추가함.
+   */
+  oAPP.oDesign.fn.prevRemoveUiObject = function(is_tree){
+    
+    return new Promise(async (resolve)=>{
+        
+        //미리보기 onAfterRendering 처리 관련 module load.
+        let _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+
+        
+        //onAfterRendering 이벤트 등록 대상 UI 얻기.
+        let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[is_tree.POBID]);
+        
+        let _oDom = undefined;
+
+        if(typeof _oTarget?.getDomRef === "function"){
+            _oDom = _oTarget.getDomRef();
+        }
+
+        let _oPromise = undefined;
+        
+        //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
+        if(typeof _oDom !== "undefined" && _oDom !== null){
+            _oPromise = _oRender.setAfterRendering(_oTarget);
+        }
+        
+        
+        //이동전 부모 영역에서 해당 UI 제거 처리.
+        oAPP.attr.ui.frame.contentWindow.delUIObjPreView(is_tree.OBJID, is_tree.POBID, is_tree.PUIOK, is_tree.UIATT, is_tree.ISMLB, is_tree.UIOBK);
+        
+        //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
+        if(typeof _oPromise !== "undefined"){
+            _oTarget.invalidate();
+            
+            //onAfterRendering 수행까지 대기.
+            await _oPromise;
+        }
+        
+        return resolve();
+
+    });
+
+  };
+
+
 })();

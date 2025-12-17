@@ -2799,7 +2799,11 @@
 
       var _dropPos = oAPP.attr.prev[i_drop.POBID][l_funcnm](oAPP.attr.prev[i_drop.OBJID]);
 
+      //미리보기 UI 제거 처리.
+      await oAPP.oDesign.fn.prevRemoveUiObject(i_drag);
 
+      //미리보기 UI 제거 처리.
+      await oAPP.oDesign.fn.prevRemoveUiObject(i_drop);
 
       //DRAG된 UI 다시 생성 처리.
       oAPP.fn.reCreateUIObjInstance(i_drag);
@@ -3184,6 +3188,9 @@
     }
     
 
+    //미리보기 UI 제거 처리.
+    await oAPP.oDesign.fn.prevRemoveUiObject(i_drag);
+
     //미리보기 UI 다시 생성 처리.
     oAPP.fn.reCreateUIObjInstance(i_drag);
 
@@ -3332,6 +3339,7 @@
       
     }
     
+
 
     //이전 UI를 유지하는 내용을 더이상 사용하지 않기에
     //이전에 생성된 UI를 DESTROY 하는 로직 추가.

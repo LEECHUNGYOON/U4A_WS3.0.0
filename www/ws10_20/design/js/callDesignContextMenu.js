@@ -519,7 +519,7 @@
             var lt_UA026 = oAPP.DATA.LIB.T_9011.filter( a => a.CATCD === "UA026" && a.FLD02 !== "X" );
 
             //같은 aggregation안에 있는 UI중 부모에 추가되지 않은 UI 존재 여부 확인.
-            for(var i=0; i<l_indx2; i++){
+            for(var i = 0; i < l_indx2; i++){
                 if(lt_UA026.findIndex( a => a.FLD01 === lt_filt[i].UILIB ) !== -1){
                     //부모에 추가되지 않은 UI인경우 PARENT.insertAggregation(UI, index) 처리할 index -1.
                     l_cnt -= 1;
@@ -527,12 +527,15 @@
 
             }
 
+
+            //미리보기 UI 제거 처리.
+            await oAPP.oDesign.fn.prevRemoveUiObject(ls_tree);
             
             //UI 다시 생성 처리.
             oAPP.fn.reCreateUIObjInstance(ls_tree);
 
             //미리보기 onAfterRendering 처리 관련 module load.
-            var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+            let _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
             
             //onAfterRendering 이벤트 등록 대상 UI 얻기.
@@ -546,7 +549,7 @@
 
             
             //RichTextEditor 미리보기 출력 예외처리로직.
-            var _aPromise = _oRender.renderingRichTextEditor(l_parent);
+            let _aPromise = _oRender.renderingRichTextEditor(l_parent);
 
             
             let _oPromise = undefined;
