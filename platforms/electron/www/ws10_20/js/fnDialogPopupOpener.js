@@ -2813,6 +2813,21 @@
      * **********************************************************************/
     oAPP.fn.fnEditorPopupOpener = (oEditorInfo, sSearchValue) => {
 
+        // no build 일 경우에만 수행!!
+        if (!APP.isPackaged) {
+
+            var sIndexPath = parent.PATH.join(PATHINFO.POPUP_ROOT, "editorPopup_v2", "index.js");
+                
+            let oParams = {
+                oEditorInfo: oEditorInfo,
+                sSearchValue: sSearchValue
+            };
+
+            parent.require(sIndexPath)(parent.REMOTE, oAPP, oParams);
+
+            return;
+        }
+
         // Editor Popup Open
         if (oAPP.fn.fnEditorPopupOpen) {
             oAPP.fn.fnEditorPopupOpen(oEditorInfo, sSearchValue);
