@@ -1035,7 +1035,20 @@
     });
 
     // 브라우저 닫기, window.close() 실행시 타는 이벤트
-    window.onbeforeunload = () => {
+    // return "";           // 안닫힘
+    // return true;         // 안닫힘
+    // return false;        // 안닫힘
+    // return;              // 닫힘
+    // return null;         // 닫힘
+    // return undefined;    // 닫힘
+
+    // e.returnValue = true;    // 안닫힘
+    // e.returnValue = false;   // 안닫힘
+    // e.returnValue = "";      // 안닫힘
+    // e.returnValue = null;    // 안닫힘
+    // e.returnValue = "X";     // 안닫힘
+    
+    window.onbeforeunload = (e) => {
 
         // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
         if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
