@@ -221,111 +221,175 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
+    // oAPP.main.fnBeforeunload = function (isClearStorage) {
+
+    //     // 화면 Lock 걸기
+    //     sap.ui.getCore().lock();
+
+    //     // Busy를 킨다.
+    //     parent.setBusy("X");
+
+    //     // 설정된 Global Shortcut 단축키 삭제
+    //     oAPP.common.fnRemoveGlobalShortcut();
+
+    //     var oPowerMonitor = parent.POWERMONITOR;
+
+    //     // 대기모드로 전환 감지 이벤트 해제
+    //     oPowerMonitor.removeListener('lock-screen', oAPP.fn.fnAttachPowerMonitorLockScreen);
+
+    //     oPowerMonitor.removeListener('unlock-screen', oAPP.fn.fnAttachPowerMonitorUnLockScreen);
+
+    //     // IPCMAIN 이벤트 해제
+    //     oAPP.fn.fnIpcMain_Detach_Event_Handler();
+
+    //     // Application 정보를 구한다.
+    //     var oAppInfo = parent.getAppInfo() || APPCOMMON.fnGetModelProperty("/WS30/APP"),
+    //         SSID = parent.getSSID();
+
+    //     // 20번 페이지 일 경우
+    //     var sPath = parent.getServerPath() + '/kill_session',
+    //         oFormData = new FormData();
+
+    //     // Edit 모드 였을 경우 Lock 해제 하고 세션 죽인다.
+    //     if (oAppInfo && oAppInfo.IS_EDIT == "X") {
+
+    //         oFormData.append("APPID", oAppInfo.APPID);
+    //         oFormData.append("SSID", SSID);
+
+    //         var oOptions = {
+    //             URL: sPath,
+    //             FORMDATA: oFormData
+    //         };
+
+    //         sendServerExit(oOptions, () => {
+
+    //             if (isClearStorage == "X") {
+
+    //                 oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
+
+    //                 // 서버리스트 포커스 주기
+    //                 oAPP.fn.fnSetFocusServerList(); // #[ws_fn_04.js]
+
+    //             }
+
+    //             window.onbeforeunload = () => { };
+
+    //             top.window.close();
+
+    //         });
+
+    //         // 화면 Lock 해제
+    //         sap.ui.getCore().unlock();
+
+    //         // Busy를 끈다.
+    //         parent.setBusy("");
+
+    //         return;
+
+    //     }
+
+    //     // 20번, 30번일 경우에만 APPID를 던진다
+    //     if(oAppInfo && oAppInfo.APPID){
+    //         oFormData.append("APPID", oAppInfo.APPID);
+    //     }        
+
+    //     oFormData.append("SSID", SSID);
+
+    //     var oOptions = {
+    //         URL: sPath,
+    //         FORMDATA: oFormData
+    //     };
+
+    //     sendServerExit(oOptions, () => {
+
+    //         // 브라우저에 내장된 세션 정보를 클리어 한다.
+    //         if (isClearStorage == "X") {
+
+    //             oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
+
+    //             // 서버리스트 포커스 주기
+    //             oAPP.fn.fnSetFocusServerList(); // #[ws_fn_04.js]
+
+    //         }
+
+    //         window.onbeforeunload = () => { };
+
+    //         top.window.close();
+
+    //         // 화면 Lock 해제
+    //         sap.ui.getCore().unlock();
+
+    //         // Busy를 끈다.
+    //         parent.setBusy("");
+
+
+    //     });
+
+    // }; // end of oAPP.main.fnBeforeunload
+    
+    /**
+     * @since   2025-12-30 19:16:37
+     * @version vNAN-NAN
+     * @author  soccerhs
+     * @description
+     *  - 공통 beforeunload 메소드 리펙토링 작업
+     * 
+     */
     oAPP.main.fnBeforeunload = function (isClearStorage) {
 
-        // 화면 Lock 걸기
+        // 1. UI 잠금 및 초기화 작업
         sap.ui.getCore().lock();
-
-        // Busy를 킨다.
         parent.setBusy("X");
-
-        // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
 
-        var oPowerMonitor = parent.POWERMONITOR;
-
-        // 대기모드로 전환 감지 이벤트 해제
+        // 2. 이벤트 리스너 해제
+        const oPowerMonitor = parent.POWERMONITOR;
         oPowerMonitor.removeListener('lock-screen', oAPP.fn.fnAttachPowerMonitorLockScreen);
-
         oPowerMonitor.removeListener('unlock-screen', oAPP.fn.fnAttachPowerMonitorUnLockScreen);
-
-        // IPCMAIN 이벤트 해제
         oAPP.fn.fnIpcMain_Detach_Event_Handler();
 
-        // Application 정보를 구한다.
-        var oAppInfo = parent.getAppInfo() || APPCOMMON.fnGetModelProperty("/WS30/APP"),
-            SSID = parent.getSSID();
+        // 3. 데이터 준비
+        const oAppInfo = parent.getAppInfo() || APPCOMMON.fnGetModelProperty("/WS30/APP");
+        const SSID = parent.getSSID();
+        const sPath = parent.getServerPath() + '/kill_session';
 
-        // 20번 페이지 일 경우
-        var sPath = parent.getServerPath() + '/kill_session',
-            oFormData = new FormData();
-
-        // Edit 모드 였을 경우 Lock 해제 하고 세션 죽인다.
-        if (oAppInfo && oAppInfo.IS_EDIT == "X") {
-
-            oFormData.append("APPID", oAppInfo.APPID);
-            oFormData.append("SSID", SSID);
-
-            var oOptions = {
-                URL: sPath,
-                FORMDATA: oFormData
-            };
-
-            sendServerExit(oOptions, () => {
-
-                if (isClearStorage == "X") {
-
-                    oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
-
-                    // 서버리스트 포커스 주기
-                    oAPP.fn.fnSetFocusServerList(); // #[ws_fn_04.js]
-
-                }
-
-                window.onbeforeunload = () => { };
-
-                top.window.close();
-
-            });
-
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            // Busy를 끈다.
-            parent.setBusy("");
-
-            return;
-
-        }
-
-        // 20번, 30번일 경우에만 APPID를 던진다
-        if(oAppInfo && oAppInfo.APPID){
-            oFormData.append("APPID", oAppInfo.APPID);
-        }        
-
+        const oFormData = new FormData();
         oFormData.append("SSID", SSID);
 
-        var oOptions = {
+        // APPID가 존재하면 추가 (Edit 모드이거나, 단순히 APPID가 있는 경우 모두 포함)
+        if (oAppInfo && oAppInfo.APPID) {
+            oFormData.append("APPID", oAppInfo.APPID);
+        }
+
+        // 4. 서버 전송 옵션 설정
+        const oOptions = {
             URL: sPath,
             FORMDATA: oFormData
         };
 
+        // 5. 서버 세션 종료 요청 및 후처리
         sendServerExit(oOptions, () => {
 
-            // 브라우저에 내장된 세션 정보를 클리어 한다.
-            if (isClearStorage == "X") {
-
+            // 스토리지 클리어 요청이 있는 경우
+            if (isClearStorage === "X") {
                 oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
-
-                // 서버리스트 포커스 주기
-                oAPP.fn.fnSetFocusServerList(); // #[ws_fn_04.js]
-
+                oAPP.fn.fnSetFocusServerList();      // #[ws_fn_04.js]
             }
 
+            // beforeunload 이벤트 무력화 (창 닫기 시 확인창 방지)
             window.onbeforeunload = () => { };
 
+            // 창 닫기
             top.window.close();
 
-            // 화면 Lock 해제
+            // UI 잠금 해제 및 Busy 끄기
+            // (창이 즉시 닫히지 않는 환경을 대비해 안전하게 수행)
             sap.ui.getCore().unlock();
-
-            // Busy를 끈다.
             parent.setBusy("");
-
 
         });
 
-    }; // end of oAPP.main.fnBeforeunload
+    }; // end of oAPP.main.fnBeforeunload    
 
     oAPP.main.fnDetachBeforeunloadEvent = () => {
 
@@ -1035,7 +1099,20 @@
     });
 
     // 브라우저 닫기, window.close() 실행시 타는 이벤트
-    window.onbeforeunload = () => {
+    // return "";           // 안닫힘
+    // return true;         // 안닫힘
+    // return false;        // 안닫힘
+    // return;              // 닫힘
+    // return null;         // 닫힘
+    // return undefined;    // 닫힘
+
+    // e.returnValue = true;    // 안닫힘
+    // e.returnValue = false;   // 안닫힘
+    // e.returnValue = "";      // 안닫힘
+    // e.returnValue = null;    // 안닫힘
+    // e.returnValue = "X";     // 안닫힘
+    
+    window.onbeforeunload = (e) => {
 
         // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
         if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
