@@ -1,4 +1,4 @@
-export var oContr = await new Promise(async (resolve)=>{
+export async function getView(){
 
 /************************************************************************
  * 💖 컨트롤러 호출
@@ -6,8 +6,8 @@ export var oContr = await new Promise(async (resolve)=>{
 
     let sControlPath = "./control.js";
 
-    const oRes = await import(sControlPath);
-    const oContr = oRes.oContr;
+    const oRes   = await import(sControlPath);
+    const oContr = await oRes.getControl();
 
     //317	Standard Theme
     const C_STANDARD_THEME = oAPP.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "317");
@@ -494,6 +494,6 @@ export var oContr = await new Promise(async (resolve)=>{
 
     oContr.ui.APP = APP;
 
-    resolve(oContr);
-
-});
+    return oContr;
+    
+}

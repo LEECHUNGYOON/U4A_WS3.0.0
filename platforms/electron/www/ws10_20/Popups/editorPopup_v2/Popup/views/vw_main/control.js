@@ -1,3 +1,5 @@
+export async function getControl() {
+
 /******************************************************************************
  *  💖 LIBRARY LOAD 선언부
  ******************************************************************************/
@@ -71,7 +73,7 @@ const
     *************************************************************/
     oContr.onViewReady = async function () {
 
-        zconsole.log("onViewReady");
+        // zconsole.log("onViewReady");
 
         oAPP.fn.setBusy("");
 
@@ -83,7 +85,7 @@ const
 	 *************************************************************/
 	oContr.fn.setBusy = function (bIsbusy, oOptions) {
 
-        let sIsBusy = (bIsbusy === true ? "X" : "");
+        // let sIsBusy = (bIsbusy === true ? "X" : "");
 
 		// oAPP.fn.setBusy(sIsBusy);
         
@@ -102,4 +104,6 @@ const
 /********************************************************************
  *💨 EXPORT
  *********************************************************************/
- export { oContr };
+    return oContr;
+
+}

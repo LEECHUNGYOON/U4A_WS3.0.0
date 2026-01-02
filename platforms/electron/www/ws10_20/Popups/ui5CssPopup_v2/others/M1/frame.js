@@ -90,9 +90,10 @@ window.addEventListener("load", function(){
         
         let sViewPath = parent.PATH.join(parent.__dirname, "views", "view.js");
 
-        let oView = await import(sViewPath);
+        const oRes = await import(sViewPath);
+        const oView = await oRes.getView();
   
-        jQuery.extend(true, oAPP, oView.oContr);
+        jQuery.extend(true, oAPP, oView);
 
         let oDelegate = {
             onAfterRendering: function(){

@@ -1,5 +1,5 @@
 
-export var oContr = await new Promise(async function(resolve){
+export async function getView(){
 
 /************************************************************************
  * 💖 컨트롤러 호출
@@ -7,9 +7,9 @@ export var oContr = await new Promise(async function(resolve){
 
     let sControlPath = "./control.js";
 
-    const oRes = await import(sControlPath);
-    const oContr = oRes.oContr;
-   
+    const oRes   = await import(sControlPath);
+    const oContr = await oRes.getControl();
+
 
 /************************************************************************
  * 💖 화면 그리기
@@ -384,6 +384,6 @@ export var oContr = await new Promise(async function(resolve){
     
     oContr.ui.ROOT = APP;
 
-    resolve(oContr);
-
-});
+    return oContr;
+    
+}
