@@ -1,0 +1,4 @@
+### 새창 띄울때 부모 지정 없이 띄우는 팝업일 경우.
+
+관련 로직 위치 확인!!
+- oAPP.fn.closeAllCurrWinDependentPopups();

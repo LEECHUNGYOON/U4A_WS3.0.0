@@ -1,26 +1,15 @@
 {
-  "browserWindow": {
-    "height": 800,
-    "webPreferences": {
-      "devTools": true,
-      "nodeIntegration": true,
-      "enableRemoteModule": true,
-      "contextIsolation": false,
-      "backgroundThrottling": false,
-      "nativeWindowOpen": true,
-      "webSecurity": false,
-      "autoplayPolicy": "no-user-gesture-required",
-      "nodeIntegrationInWorker": true
-    },
-    "width": 1000,
-    "icon": "www/img/logo.png",
-    "autoHideMenuBar": true
-  },
-  "browserWindowInstance": {
-    "loadURL": {
-      "url": "index.html"
+    "browserWindow": {
+        "height": 800,
+        "webPreferences": {
+            "devTools": true,
+            "nodeIntegration": true,
+            "enableRemoteModule": true,
+            "contextIsolation": false,
+            "backgroundThrottling": false,
+            "nativeWindowOpen": true,
+            "webSecurity": false
+        },
+        "width": 800
     }
-  },
-  "scheme": "file",
-  "hostname": "localhost"
 }
