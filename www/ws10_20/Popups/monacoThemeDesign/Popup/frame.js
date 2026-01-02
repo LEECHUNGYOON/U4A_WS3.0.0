@@ -255,11 +255,11 @@ window.addEventListener("load", function(){
 
         let sViewPath = parent.PATH.join(parent.__dirname, "views", "vw_main", "view.js");
 
-        let oView = await import(sViewPath);
+        const oRes = await import(sViewPath);
+        const oView = await oRes.getView();
 
         oAPP.views.VW_MAIN = {};
-
-        oAPP.views.VW_MAIN = oView.oContr;  
+        oAPP.views.VW_MAIN = oView;
 
 
         let oMainAPP = oAPP.views.VW_MAIN.ui.APP;

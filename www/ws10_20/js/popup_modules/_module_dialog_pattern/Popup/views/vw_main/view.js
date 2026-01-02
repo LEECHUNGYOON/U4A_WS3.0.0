@@ -1,4 +1,3 @@
-// export var oContr = await new Promise(async (resolve)=>{
 export async function getView(){
 
 /************************************************************************
@@ -7,8 +6,8 @@ export async function getView(){
 
     let sControlPath = "./control.js";
 
-    const oRes = await import(sControlPath);
-    const oContr = oRes.oContr;
+    const oRes   = await import(sControlPath);
+    const oContr = await oRes.getControl();
 
 
 /************************************************************************

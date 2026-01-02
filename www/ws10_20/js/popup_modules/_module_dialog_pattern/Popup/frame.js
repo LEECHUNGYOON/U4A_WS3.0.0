@@ -315,9 +315,8 @@ window.addEventListener("load", function(){
         const oView = await oRes.getView();
 
         oAPP.views.VW_MAIN = {};
-        oAPP.views.VW_MAIN = oView;  
-
-
+        oAPP.views.VW_MAIN = oView;
+        
         let oMainAPP = oAPP.views.VW_MAIN.ui.APP;
 
         let oDelegate = {
