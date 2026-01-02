@@ -510,3 +510,38 @@ html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs10Page .sapMPage > section {
 .u4aWsMainBody .sapUiBLy {
   background-color: transparent;
 }
+
+/**
+ * @since   2026-01-03 00:08:42
+ * @version vNAN-NAN
+ * @author  PES
+ * @description
+ * UI의 ATTRIBUTE 변경건 표현 CSS 처리 내용 추가.
+ */
+/**
+   dark 계열 일 경우 
+*/
+html[class*=sapUiTheme][class*="dark"] .u4aWs20Page .u4aWsDesignAttr .changeValue {
+    background:linear-gradient(to bottom,#1f2630,#161c24);
+    box-shadow:inset 6px 6px 12px rgba(0,0,0,.6), inset -6px -6px 12px rgba(255,255,255,.06);
+    border-radius:8px;
+}
+
+html[class*=sapUiTheme][class*="dark"] .u4aWs20Page .u4aWsDesignAttr .changeValue * { 
+    color:#6aa9ff;
+    font-weight:bold;
+}
+
+/**
+   white 계열일 경우
+*/
+html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs20Page .u4aWsDesignAttr .changeValue {
+    background:linear-gradient(to bottom,#f4f6f8,#e9edf1);
+    box-shadow:inset 6px 6px 12px rgba(0,0,0,.12), inset -6px -6px 12px rgba(255,255,255,.9);
+    border-radius:8px;
+}
+
+html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs20Page .u4aWsDesignAttr .changeValue * {
+    color:#0066ff;
+    font-weight:bold;
+}

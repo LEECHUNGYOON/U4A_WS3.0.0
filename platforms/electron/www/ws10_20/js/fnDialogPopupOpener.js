@@ -2813,20 +2813,20 @@
      * **********************************************************************/
     oAPP.fn.fnEditorPopupOpener = (oEditorInfo, sSearchValue) => {
 
-        // no build 일 경우에만 수행!!
-        if (!APP.isPackaged) {
+        // // no build 일 경우에만 수행!!
+        // if (parent.process.env.COMPUTERNAME.includes("YOON") === true) {
 
-            var sIndexPath = parent.PATH.join(PATHINFO.POPUP_ROOT, "editorPopup_v2", "index.js");
+        //     var sIndexPath = parent.PATH.join(PATHINFO.POPUP_ROOT, "editorPopup_v2", "index.js");
                 
-            let oParams = {
-                oEditorInfo: oEditorInfo,
-                sSearchValue: sSearchValue
-            };
+        //     let oParams = {
+        //         oEditorInfo: oEditorInfo,
+        //         sSearchValue: sSearchValue
+        //     };
 
-            parent.require(sIndexPath)(parent.REMOTE, oAPP, oParams);
+        //     parent.require(sIndexPath)(parent.REMOTE, oAPP, oParams);
 
-            return;
-        }
+        //     return;
+        // }
 
         // Editor Popup Open
         if (oAPP.fn.fnEditorPopupOpen) {
